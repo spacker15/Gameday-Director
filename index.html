@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameDay Director</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#143d59" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">GD</div>
+        <div>
+          <h1>GameDay Director</h1>
+          <p>League Operations Web App</p>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav"></nav>
+
+      <div class="sidebar-footer">
+        <label class="small-label">League Name</label>
+        <input id="leagueNameInput" type="text" placeholder="Any league name" />
+        <label class="small-label">Event Date</label>
+        <input id="eventDateInput" type="date" />
+        <button class="btn btn-primary btn-block" id="saveSettingsBtn">Save</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p id="subtitle"></p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn" id="seedBtn">Reset Sample Data</button>
+          <button class="btn btn-accent" id="exportBtn">Export Data</button>
+          <label class="btn btn-primary file-btn">
+            Import Data
+            <input type="file" id="importFile" accept="application/json" hidden />
+          </label>
+        </div>
+      </header>
+
+      <section id="view-dashboard" class="view"></section>
+      <section id="view-games" class="view hidden"></section>
+      <section id="view-fields" class="view hidden"></section>
+      <section id="view-refs" class="view hidden"></section>
+      <section id="view-volunteers" class="view hidden"></section>
+      <section id="view-reports" class="view hidden"></section>
+      <section id="view-settings" class="view hidden"></section>
+    </main>
+  </div>
+
+  <dialog id="modal">
+    <form method="dialog" class="modal-card" id="modalContent"></form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

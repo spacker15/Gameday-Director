@@ -1,0 +1,9 @@
+{
+  "name": "GameDay Director",
+  "short_name": "GameDay",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#143d59",
+  "icons": []
+}
