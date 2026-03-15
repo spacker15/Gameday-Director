@@ -1,6 +1,6 @@
 
 {
-  "name": "leagueops-live-v16",
+  "name": "leagueops-live-v17",
   "private": true,
   "scripts": {
     "dev": "next dev",
