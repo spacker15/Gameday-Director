@@ -24,8 +24,48 @@ function loadState(){
 }
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
+function parseDateValue(dateStr){
+  const d = new Date(String(dateStr || "").trim() + "T00:00:00");
+  return isNaN(d.getTime()) ? null : d;
+}
+function parseTimeValue(timeStr){
+  const raw = String(timeStr || "").trim().toUpperCase();
+  if(!raw) return Number.MAX_SAFE_INTEGER;
+  const m = raw.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+  if(!m) return Number.MAX_SAFE_INTEGER;
+  let hour = parseInt(m[1], 10);
+  const minute = parseInt(m[2] || "0", 10);
+  const meridian = (m[3] || "").toUpperCase();
+  if(meridian === "PM" && hour !== 12) hour += 12;
+  if(meridian === "AM" && hour === 12) hour = 0;
+  return hour * 60 + minute;
+}
+function sortGamesByTime(a,b){
+  const ta = parseTimeValue(a.time);
+  const tb = parseTimeValue(b.time);
+  if(ta !== tb) return ta - tb;
+  return String(a.field || "").localeCompare(String(b.field || ""));
+}
+function toggleStaffCheckIn(type, name){
+  const list = type === "ref" ? state.refs : state.volunteers;
+  const person = list.find(p => p.name === name);
+  if(!person) return;
+  person.checkedIn = !person.checkedIn;
+  addMessage("Check-In", `${person.name} ${person.checkedIn ? "checked in" : "checked out"}.`);
+  saveState();
+  renderSchedule();
+  renderDashboard();
+  renderStaff();
+}
+
 function getDates(){
-  return [...new Set(state.games.map(g=>g.date))].sort();
+  return [...new Set(state.games.map(g=>g.date))]
+    .sort((a,b)=>{
+      const da = parseDateValue(a);
+      const db = parseDateValue(b);
+      if(da && db) return da - db;
+      return String(a).localeCompare(String(b));
+    });
 }
 function fmtDate(date){
   try{
@@ -123,7 +163,7 @@ function renderDashboard(){
   const games = todaysGames();
   const fieldCount = unique(games.map(g=>g.field)).length;
   const delayActive = !!state.weather.delayEnd && new Date(state.weather.delayEnd).getTime() > Date.now();
-  const nextGames = [...games].sort((a,b)=>(a.time||"").localeCompare(b.time||"")).slice(0,8);
+  const nextGames = [...games].sort(sortGamesByTime).slice(0,8);
   el.innerHTML = `
     <div class="grid cols-4">
       <div class="card kpi"><div class="small muted">Games on ${fmtDate(state.selectedDate)}</div><div class="value">${games.length}</div><div class="muted">Across ${fieldCount} active fields</div></div>
@@ -229,7 +269,7 @@ function renderSchedule(){
         <div class="row space"><h3>Available Refs</h3><button class="secondary" onclick="quickCheckIn('ref')">Self Check-In</button></div>
         <div class="drag-list">
           ${state.refs.map(r=>`
-            <div class="staff-chip" draggable="true" data-drag-type="ref" data-drag-name="${escapeHtml(r.name)}">
+            <div class="staff-chip" draggable="true" data-drag-type="ref" data-drag-name="${escapeHtml(r.name)}" data-name="${escapeHtml(r.name)}" role="button" tabindex="0" title="Click to check in or out. Drag to assign.">
               <div><strong>${r.name}</strong></div>
               <div class="small muted">${r.level} • ${r.shirtSize}</div>
               <div class="small muted">${r.phone}</div>
@@ -244,7 +284,7 @@ function renderSchedule(){
         <div class="row space"><h3>Volunteers</h3><button class="secondary" onclick="quickCheckIn('volunteer')">Self Check-In</button></div>
         <div class="drag-list">
           ${state.volunteers.map(v=>`
-            <div class="staff-chip" draggable="true" data-drag-type="volunteer" data-drag-name="${escapeHtml(v.name)}">
+            <div class="staff-chip" draggable="true" data-drag-type="volunteer" data-drag-name="${escapeHtml(v.name)}" data-name="${escapeHtml(v.name)}" role="button" tabindex="0" title="Click to check in or out. Drag to assign.">
               <div><strong>${v.name}</strong></div>
               <div class="small muted">${v.role}</div>
               <div class="small">${v.checkedIn?'<span class="tag green">Checked In</span>':'<span class="tag gray">Not Checked In</span>'}</div>
@@ -289,6 +329,18 @@ function bindDragSource(el){
   el.addEventListener("dragstart", e=>{
     dragContext = {type: el.dataset.dragType, name: el.dataset.dragName};
     e.dataTransfer.setData("text/plain", JSON.stringify(dragContext));
+    el.dataset.dragging = "1";
+  });
+  el.addEventListener("dragend", ()=>{ delete el.dataset.dragging; });
+  el.addEventListener("click", ()=>{
+    if(el.dataset.dragging === "1") return;
+    toggleStaffCheckIn(el.dataset.dragType, el.dataset.dragName);
+  });
+  el.addEventListener("keydown", e=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      toggleStaffCheckIn(el.dataset.dragType, el.dataset.dragName);
+    }
   });
 }
 function bindDropzone(el, onDrop){
@@ -308,7 +360,7 @@ function drawScheduleBoard(){
   const games = filteredScheduleGames();
   const fieldNames = boardFieldNames(games);
   board.innerHTML = fieldNames.map(field=>{
-    const fieldGames = games.filter(g=>g.field===field).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+    const fieldGames = games.filter(g=>g.field===field).sort(sortGamesByTime);
     return `
       <div class="field-col" data-field="${field}">
         <div class="field-head"><div><strong>${field}</strong><div class="small muted">${fieldGames.length} games</div></div><button class="secondary small-btn" onclick="openFieldEditor('${escapeJs(field)}')">Edit</button></div>
