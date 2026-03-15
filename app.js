@@ -1,5 +1,5 @@
 
-const STORAGE_KEY = 'leagueops-live-v5-1-date-division-map';
+const STORAGE_KEY = 'leagueops-live-v5-2-clean-reset';
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
