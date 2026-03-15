@@ -1,9 +1,31 @@
 
-export default function Incidents({incidents}){
+export default function Incidents({state,setState}){
+
+function add(){
+
+const text=prompt("Incident description")
+
+if(!text)return
+
+state.incidents.push({
+time:new Date().toLocaleTimeString(),
+text
+})
+
+setState({...state})
+}
+
 return(
-<div className="panel">
-<h3>Incidents</h3>
-{incidents.length===0 && <div>No incidents</div>}
+<div>
+
+<h3>Incident Log</h3>
+
+<button onClick={add}>Add Incident</button>
+
+{state.incidents.map((i,k)=>(
+<div key={k}>{i.time} – {i.text}</div>
+))}
+
 </div>
 )
 }

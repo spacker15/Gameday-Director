@@ -6,11 +6,9 @@ import {initialState} from "../data/sampleData"
 
 import Tabs from "../components/Tabs"
 import FieldBoard from "../components/modules/FieldBoard"
-import DragBoard from "../components/modules/DragBoard"
-import Assignments from "../components/modules/Assignments"
-import Weather from "../components/modules/Weather"
-import MapBuilder from "../components/modules/MapBuilder"
-import Scheduler from "../components/modules/Scheduler"
+import Checkin from "../components/modules/Checkin"
+import Uploads from "../components/modules/Uploads"
+import Incidents from "../components/modules/Incidents"
 
 export default function Page(){
 
@@ -19,65 +17,55 @@ const [active,setActive]=useState("dashboard")
 
 const tabs=[
 {key:"dashboard",label:"Dashboard"},
-{key:"fields",label:"Field Board"},
-{key:"drag",label:"Drag Board"},
-{key:"assignments",label:"Assignments"},
-{key:"weather",label:"Weather"},
-{key:"map",label:"Park Builder"},
-{key:"scheduler",label:"Scheduler"}
+{key:"checkin",label:"Game Check‑In"},
+{key:"uploads",label:"Uploads"},
+{key:"incidents",label:"Incidents"}
 ]
 
-const gamesToday=state.games.filter(g=>g.date===state.selectedDate)
+const game=state.games[0]
 
 return(
 <div>
 
 <header>
-
-<h1>LeagueOps Live v16</h1>
+<h1>LeagueOps Live v18</h1>
 
 <div>
 Event Date
 <input
 type="date"
-value={state.selectedDate}
-onChange={(e)=>setState({...state,selectedDate:e.target.value})}
+value={state.date}
+onChange={e=>setState({...state,date:e.target.value})}
 />
 </div>
 
 </header>
 
-<Tabs tabs={tabs} active={active} setActive={setActive}/>
+<Tabs tabs={tabs} setActive={setActive}/>
 
 {active==="dashboard" && (
 <div className="panel">
-<h3>Live Field Status Board</h3>
-<FieldBoard fields={state.fields} games={gamesToday}/>
+<h2>Live Field Status Board</h2>
+<FieldBoard games={state.games}/>
 </div>
 )}
 
-{active==="fields" && (
-<FieldBoard fields={state.fields} games={gamesToday}/>
+{active==="checkin" && (
+<div className="panel">
+<Checkin game={game} teams={state.teams} setState={setState} state={state}/>
+</div>
 )}
 
-{active==="drag" && (
-<DragBoard games={gamesToday}/>
+{active==="uploads" && (
+<div className="panel">
+<Uploads setState={setState} state={state}/>
+</div>
 )}
 
-{active==="assignments" && (
-<Assignments refs={state.refs} volunteers={state.volunteers}/>
-)}
-
-{active==="weather" && (
-<Weather weather={state.weather} setWeather={(w)=>setState({...state,weather:w})}/>
-)}
-
-{active==="map" && (
-<MapBuilder/>
-)}
-
-{active==="scheduler" && (
-<Scheduler/>
+{active==="incidents" && (
+<div className="panel">
+<Incidents state={state} setState={setState}/>
+</div>
 )}
 
 </div>

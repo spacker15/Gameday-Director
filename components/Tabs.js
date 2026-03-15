@@ -1,11 +1,9 @@
 
-export default function Tabs({tabs,active,setActive}){
+export default function Tabs({tabs,setActive}){
 return(
 <div className="tabs">
 {tabs.map(t=>(
-<button key={t.key} onClick={()=>setActive(t.key)}>
-{t.label}
-</button>
+<button key={t.key} onClick={()=>setActive(t.key)}>{t.label}</button>
 ))}
 </div>
 )

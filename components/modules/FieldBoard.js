@@ -1,26 +1,21 @@
 
-export default function FieldBoard({fields,games}){
-
-function getGame(field){
-return games.find(g=>g.field===field.id)
-}
+export default function FieldBoard({games}){
 
 return(
 <div className="grid">
-{fields.map(field=>{
+{[1,2,3,4,5,6].map(f=>{
 
-const game=getGame(field)
+const game=games.find(g=>g.field===f)
 
 return(
-<div key={field.id} className="field-card">
+<div key={f} className="card">
 
-<strong>{field.name}</strong>
+<strong>Field {f}</strong>
 
 {game?(
 <>
 <div>{game.team1} vs {game.team2}</div>
 <div>{game.time}</div>
-<div className={"status scheduled"}>{game.status}</div>
 </>
 ):(
 <div>No Game</div>

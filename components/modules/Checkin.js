@@ -1,30 +1,27 @@
 
-export default function Checkin({teams,game,checkins,setCheckins}){
+export default function Checkin({game,teams,setState,state}){
 
-if(!game) return <div className="panel">No Game Selected</div>
+const roster=[...(teams[game.team1]||[]),...(teams[game.team2]||[])]
 
-const players=[...(teams[game.team1]||[]),(teams[game.team2]||[])]
+function toggle(player){
 
-function toggle(p){
+const g=state.games[0]
 
-const key=p+"_"+game.time
-const next={...checkins}
+g.checkins[player]=!g.checkins[player]
 
-if(next[key]) delete next[key]
-else next[key]=true
-
-setCheckins(next)
-
+setState({...state})
 }
 
 return(
-<div className="panel">
+<div>
 
-<h3>Player Check-In</h3>
+<h3>Game Check‑In</h3>
 
-{players.map(p=>(
-<div key={p} onClick={()=>toggle(p)} style={{cursor:"pointer"}}>
-{p} — {checkins[p+"_"+game.time]?"Checked In":"Tap to Check In"}
+{roster.map(p=>(
+<div key={p}>
+<button onClick={()=>toggle(p)}>
+{game.checkins[p]?"✔":"○"} {p}
+</button>
 </div>
 ))}
 
