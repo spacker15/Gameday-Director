@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <div class="hero-card stats-card wide">
+        <div class="hero-card stats-card">
           <div class="eyebrow">League Snapshot</div>
           <div class="stats-grid" id="snapshotStats"></div>
         </div>
@@ -68,10 +68,10 @@
           <div class="panel-header compact">
             <div>
               <h3>Today at a Glance</h3>
-              <p class="muted">Quick visibility into game day health.</p>
+              <p class="muted">Scheduling, staffing, score table, and conduct visibility.</p>
             </div>
           </div>
-          <div class="glance-grid">
+          <div class="glance-grid four-up">
             <div>
               <h4>Open Staffing Gaps</h4>
               <div id="dashboardGaps" class="list-stack"></div>
@@ -84,6 +84,10 @@
               <h4>Latest Communications</h4>
               <div id="dashboardMessages" class="list-stack"></div>
             </div>
+            <div>
+              <h4>Conduct Watch</h4>
+              <div id="dashboardConduct" class="list-stack"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -93,7 +97,7 @@
       <div class="panel-header">
         <div>
           <h3>Scheduling Board</h3>
-          <p>Field-by-field operations board with staffing and roster status.</p>
+          <p>ESPN-style field board with staffing, score table, and conduct tracking.</p>
         </div>
         <div class="inline-actions">
           <button id="addGameBtn">Add Game</button>
@@ -222,7 +226,7 @@
         <div class="card form-card">
           <h3>Communications</h3>
           <div class="grid-form">
-            <label>Type<select id="messageType"><option>Site Alert</option><option>Weather</option><option>Roster</option><option>Trainer</option><option>Referee</option><option>Volunteer</option></select></label>
+            <label>Type<select id="messageType"><option>Site Alert</option><option>Weather</option><option>Roster</option><option>Trainer</option><option>Referee</option><option>Volunteer</option><option>Conduct</option><option>Score Table</option></select></label>
             <label>Message<input id="messageText" placeholder="Field 3 delayed 15 minutes" /></label>
           </div>
           <button id="sendMessageBtn">Post Message</button>
@@ -245,7 +249,15 @@
         <label>Ref 1<input id="gameRef1Input" /></label>
         <label>Ref 2<input id="gameRef2Input" /></label>
         <label>Clock<input id="gameClockInput" /></label>
-        <label>Score<input id="gameScoreInput" /></label>
+        <label>Score Table<input id="gameScoreInput" /></label>
+        <label>Home Score<input id="gameHomeScoreInput" type="number" min="0" /></label>
+        <label>Away Score<input id="gameAwayScoreInput" type="number" min="0" /></label>
+        <label>Home Warnings<input id="gameWarningsHomeInput" type="number" min="0" /></label>
+        <label>Away Warnings<input id="gameWarningsAwayInput" type="number" min="0" /></label>
+        <label>Home Ejections<input id="gameEjectionsHomeInput" type="number" min="0" /></label>
+        <label>Away Ejections<input id="gameEjectionsAwayInput" type="number" min="0" /></label>
+        <label class="span-2 checkbox-row"><input id="gameFightInput" type="checkbox" /> Fight or major disruption occurred</label>
+        <label class="span-2">Disruption Notes<textarea id="gameDisruptionNotesInput" rows="3" placeholder="Bench issue, spectator problem, fight, etc."></textarea></label>
       </div>
       <menu class="dialog-actions">
         <button value="cancel" class="ghost">Cancel</button>
