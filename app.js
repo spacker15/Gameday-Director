@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'leagueops-live-nfyll-demo-v2';
+const STORAGE_KEY = 'leagueops-live-nfyll-demo-v1';
 const uid = (p='id') => `${p}-${Math.random().toString(36).slice(2,9)}`;
 const timestamp = () => new Date().toLocaleString([], {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
 
@@ -2576,116 +2576,35 @@ const seed = {
           ]
         }
       ],
-"refs": [
-  {
-    "id": "r1",
-    "name": "Samuel Branford",
-    "level": "Youth Ref",
-    "email": "sammbransford@icloud.com",
-    "phone": "904-449-1444",
-    "shirtSize": "XL",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size XL"
-  },
-  {
-    "id": "r2",
-    "name": "Kaleb Thrasher",
-    "level": "Youth Ref",
-    "email": "kthrasher2014.kt@gmail.com",
-    "phone": "904-742-9195",
-    "shirtSize": "2XL",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size 2XL"
-  },
-  {
-    "id": "r3",
-    "name": "Gavin Branford",
-    "level": "Youth Ref",
-    "email": "gavinbransford@icloud.com",
-    "phone": "904-706-7609",
-    "shirtSize": "XL",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size XL"
-  },
-  {
-    "id": "r4",
-    "name": "Grant Charles",
-    "level": "Youth Ref",
-    "email": "grant.w.charles1@icloud.com",
-    "phone": "904-944-1931",
-    "shirtSize": "M",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size M"
-  },
-  {
-    "id": "r5",
-    "name": "Sam Larkin",
-    "level": "Youth Ref",
-    "email": "samlarkin4@icloud.com",
-    "phone": "904-767-1298",
-    "shirtSize": "L",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size L"
-  },
-  {
-    "id": "r6",
-    "name": "Will Larkin",
-    "level": "Youth Ref",
-    "email": "willlarkin@icloud.com",
-    "phone": "904-597-5177",
-    "shirtSize": "L",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size L"
-  },
-  {
-    "id": "r7",
-    "name": "Luke Peacock",
-    "level": "Youth Ref",
-    "email": "Luke.austin.peacock@gmail.com",
-    "phone": "904-806-7511",
-    "shirtSize": "M",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size M"
-  },
-  {
-    "id": "r8",
-    "name": "Gunner Lee",
-    "level": "Youth Ref",
-    "email": "leegunner30@gmail.com",
-    "phone": "904-667-9972",
-    "shirtSize": "L",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size L"
-  },
-  {
-    "id": "r9",
-    "name": "Xander Lee",
-    "level": "Youth Ref",
-    "email": "Xanderelee1@gmail.com",
-    "phone": "904-667-9971",
-    "shirtSize": "L",
-    "games7v7": 0,
-    "gamesModified": 0,
-    "gamesFull": 0,
-    "notes": "Youth ref • TS Size L"
-  }
-],
+      "refs": [
+        {
+          "id": "r1",
+          "name": "Tyler Brooks",
+          "level": "Level 2",
+          "games7v7": 10,
+          "gamesModified": 9,
+          "gamesFull": 8,
+          "notes": "Loaded as demo official."
+        },
+        {
+          "id": "r2",
+          "name": "Mason Lee",
+          "level": "Level 1",
+          "games7v7": 12,
+          "gamesModified": 7,
+          "gamesFull": 2,
+          "notes": "Loaded as demo official."
+        },
+        {
+          "id": "r3",
+          "name": "Jake Turner",
+          "level": "Level 2",
+          "games7v7": 8,
+          "gamesModified": 11,
+          "gamesFull": 6,
+          "notes": "Loaded as demo official."
+        }
+      ],
       "volunteers": [
         {
           "id": "v1",
@@ -4282,7 +4201,7 @@ function gameCard(g){
 function renderBoard(){
   const l = league();
   document.getElementById('availableRefs').innerHTML = listHTML(
-    l.refs.map(r => `<div class="person-chip"><strong>${r.name}</strong><div class="muted">${r.level}${r.shirtSize ? ` • ${r.shirtSize}` : ""}</div></div>`),
+    l.refs.map(r => `<div class="person-chip"><strong>${r.name}</strong><div class="muted">${r.level}</div></div>`),
     'No referees loaded.'
   );
   document.getElementById('availableVolunteers').innerHTML = listHTML(
