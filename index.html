@@ -1,76 +1,105 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>LeagueOps Live v8</title>
-<link rel="stylesheet" href="styles.css">
-<script src="data-model.js"></script>
-<script src="scheduler.js"></script>
-<script src="board.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeagueOps Live – Command Center</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
 </head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">WEB-BASED LEAGUE COMMAND CENTER</div>
+      <h1>LeagueOps Live</h1>
+      <div class="subline">Option B • Operations Command Center</div>
+    </div>
+    <div class="top-actions">
+      <button class="ghost">Export Backup</button>
+      <button class="danger">Reset Demo</button>
+    </div>
+  </header>
 
-<body onload="initApp()">
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="board">Schedule Board</button>
+  </nav>
 
-<header>
-<h1>LeagueOps Live – Game Day Command Center</h1>
-<nav>
-<button onclick="showTab('dashboard')">Dashboard</button>
-<button onclick="showTab('board')">Schedule Board</button>
-</nav>
-</header>
+  <main>
+    <section id="dashboard" class="page active">
+      <div class="tile-grid">
+        <div class="metric blue">
+          <div class="label">Scheduled</div>
+          <div class="value" id="metricScheduled">0</div>
+        </div>
+        <div class="metric yellow">
+          <div class="label">Starting</div>
+          <div class="value" id="metricStarting">0</div>
+        </div>
+        <div class="metric green">
+          <div class="label">Live</div>
+          <div class="value" id="metricLive">0</div>
+        </div>
+        <div class="metric orange">
+          <div class="label">Halftime</div>
+          <div class="value" id="metricHalftime">0</div>
+        </div>
+        <div class="metric gray">
+          <div class="label">Final</div>
+          <div class="value" id="metricFinal">0</div>
+        </div>
+        <div class="metric red">
+          <div class="label">Delayed</div>
+          <div class="value" id="metricDelayed">0</div>
+        </div>
+      </div>
 
-<section id="dashboard" class="tab">
-<h2>Game Day Status</h2>
-<div id="statusPanel"></div>
-</section>
+      <div class="dashboard-grid">
+        <section class="panel">
+          <div class="panel-title">Field Operations Board</div>
+          <div id="fieldStatusGrid" class="field-status-grid"></div>
+        </section>
 
-<section id="board" class="tab">
-<h2>Field Schedule</h2>
-<div id="boardContainer"></div>
-</section>
+        <section class="panel">
+          <div class="panel-title">Ref Coverage</div>
+          <div id="refCoverage"></div>
+        </section>
 
-<script>
+        <section class="panel">
+          <div class="panel-title">Player Verification</div>
+          <div id="playerVerification"></div>
+        </section>
 
-function initApp(){
-showTab('dashboard')
-renderDashboard()
-renderBoard()
-}
+        <section class="panel">
+          <div class="panel-title">Incident Monitor</div>
+          <div id="incidentMonitor"></div>
+        </section>
 
-function showTab(tab){
-document.querySelectorAll('.tab').forEach(t=>t.style.display='none')
-document.getElementById(tab).style.display='block'
-}
+        <section class="panel">
+          <div class="panel-title">Weather Command</div>
+          <div class="weather-box">
+            <div class="weather-row"><span>Conditions</span><strong>Clear</strong></div>
+            <div class="weather-row"><span>Temp</span><strong>78°F</strong></div>
+            <div class="weather-row"><span>Wind</span><strong>6 mph</strong></div>
+            <div class="weather-alert safe" id="weatherStatus">SAFE</div>
+          </div>
+        </section>
 
-function renderDashboard(){
+        <section class="panel">
+          <div class="panel-title">Operations Log</div>
+          <div id="opsLog"></div>
+        </section>
+      </div>
+    </section>
 
-const games = LeagueDB.games
-
-const counts = {
-Scheduled:0,
-Starting:0,
-Live:0,
-Halftime:0,
-Final:0,
-Delayed:0
-}
-
-games.forEach(g=>{
-counts[g.status] = (counts[g.status] || 0) + 1
-})
-
-document.getElementById("statusPanel").innerHTML = `
-Scheduled: ${counts.Scheduled}<br>
-Starting: ${counts.Starting}<br>
-Live: ${counts.Live}<br>
-Halftime: ${counts.Halftime}<br>
-Final: ${counts.Final}<br>
-Delayed: ${counts.Delayed}
-`
-}
-
-</script>
-
+    <section id="board" class="page">
+      <div class="board-toolbar">
+        <h2>Schedule Board</h2>
+        <button id="delayAllBtn" class="danger">Trigger Lightning Delay</button>
+      </div>
+      <div id="boardGrid" class="board-grid"></div>
+    </section>
+  </main>
 </body>
 </html>
