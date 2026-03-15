@@ -1,7 +1,8 @@
+
 import "../styles/globals.css";
 
 export const metadata = {
-  title: "LeagueOps Live v10",
+  title: "LeagueOps Live v10.1",
   description: "Game Day Operations Platform"
 };
 
