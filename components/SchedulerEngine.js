@@ -1,18 +1,20 @@
 
 export default function SchedulerEngine(){
 
-  return(
-    <div className="panel">
-      <h3>Scheduling Engine</h3>
+return(
+<div className="panel">
 
-      <ul>
-        <li>No back-to-back games</li>
-        <li>Minimum rest between games</li>
-        <li>Balanced field assignments</li>
-        <li>Double-header limit</li>
-      </ul>
+<h3>Scheduling Engine</h3>
 
-      <button>Generate Schedule</button>
-    </div>
-  )
+<ul>
+<li>No back-to-back games</li>
+<li>Minimum rest between games</li>
+<li>Balanced fields</li>
+<li>Max games per day</li>
+</ul>
+
+<button>Generate Schedule</button>
+
+</div>
+)
 }

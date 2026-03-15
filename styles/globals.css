@@ -1,58 +1,54 @@
 
 body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#eef3fb;
+font-family:Arial;
+margin:0;
+background:#eef3fb;
 }
 
 header{
-  background:#0b3275;
-  color:white;
-  padding:16px;
+background:#0b3275;
+color:white;
+padding:16px;
 }
 
 .tabs{
-  background:white;
-  padding:10px;
-  border-bottom:3px solid #2b59d1;
+background:white;
+padding:10px;
+border-bottom:3px solid #2b59d1;
 }
 
 button{
-  padding:8px 14px;
-  margin-right:8px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+padding:8px 14px;
+margin-right:8px;
+border:none;
+border-radius:8px;
+cursor:pointer;
 }
 
 .panel{
-  background:white;
-  padding:16px;
-  border-radius:10px;
-  margin:14px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
+background:white;
+padding:16px;
+border-radius:10px;
+margin:14px;
+box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
 }
 
 .field-card{
-  background:#f8fbff;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid #d8e0ee;
+background:#f8fbff;
+padding:12px;
+border-radius:8px;
+border:1px solid #d8e0ee;
 }
 
 .badge{
-  padding:4px 8px;
-  border-radius:20px;
-  font-size:12px;
+padding:4px 8px;
+border-radius:20px;
+font-size:12px;
+background:#e5e7eb;
 }
-
-.live{background:#d1fae5}
-.half{background:#fde68a}
-.delay{background:#fee2e2}
-.final{background:#e5e7eb}

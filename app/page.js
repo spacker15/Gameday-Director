@@ -2,80 +2,81 @@
 "use client"
 
 import {useState} from "react"
+import {initialState} from "../data/sampleData"
 import Tabs from "../components/Tabs"
 import FieldBoard from "../components/FieldBoard"
 import WeatherPanel from "../components/WeatherPanel"
 import IncidentPanel from "../components/IncidentPanel"
 import TrainerPanel from "../components/TrainerPanel"
-import MapBuilder from "../components/MapBuilder"
 import SchedulerEngine from "../components/SchedulerEngine"
-import {initialState} from "../data/sampleData"
 
 export default function Page(){
 
-  const [state,setState]=useState(initialState)
-  const [active,setActive]=useState("dashboard")
+const [state,setState]=useState(initialState)
+const [active,setActive]=useState("dashboard")
 
-  const tabs=[
-    {key:"dashboard",label:"Dashboard"},
-    {key:"fields",label:"Field Status"},
-    {key:"weather",label:"Weather"},
-    {key:"medical",label:"Trainer"},
-    {key:"incidents",label:"Incidents"},
-    {key:"map",label:"Park Map"},
-    {key:"engine",label:"Scheduling Engine"}
-  ]
+const tabs=[
+{key:"dashboard",label:"Dashboard"},
+{key:"fields",label:"Field Status"},
+{key:"weather",label:"Weather"},
+{key:"medical",label:"Trainer"},
+{key:"incidents",label:"Incidents"},
+{key:"engine",label:"Scheduling Engine"}
+]
 
-  return(
-    <div>
+const gamesForDate = state.games.filter(g=>g.date===state.selectedDate)
 
-      <header>
-        <h1>LeagueOps Live v11</h1>
+return(
+<div>
 
-        <div>
-          Event Date:
-          <input
-          type="date"
-          value={state.selectedDate}
-          onChange={(e)=>setState({...state,selectedDate:e.target.value})}
-          />
-        </div>
+<header>
 
-      </header>
+<h1>LeagueOps Live v12</h1>
 
-      <Tabs active={active} setActive={setActive} tabs={tabs}/>
+<div>
 
-      {active==="dashboard" && (
-        <div className="panel">
-          <h3>Live Field Status Board</h3>
-          <FieldBoard fields={state.fields} games={state.games}/>
-        </div>
-      )}
+Event Date:
 
-      {active==="fields" && (
-        <FieldBoard fields={state.fields} games={state.games}/>
-      )}
+<input
+type="date"
+value={state.selectedDate}
+onChange={(e)=>setState({...state,selectedDate:e.target.value})}
+/>
 
-      {active==="weather" && (
-        <WeatherPanel weather={state.weather}/>
-      )}
+</div>
 
-      {active==="medical" && (
-        <TrainerPanel medical={state.medical}/>
-      )}
+</header>
 
-      {active==="incidents" && (
-        <IncidentPanel incidents={state.incidents}/>
-      )}
+<Tabs tabs={tabs} active={active} setActive={setActive}/>
 
-      {active==="map" && (
-        <MapBuilder/>
-      )}
+{active==="dashboard" && (
+<div className="panel">
+<h3>Live Field Status Board</h3>
+<FieldBoard fields={state.fields} games={gamesForDate}/>
+</div>
+)}
 
-      {active==="engine" && (
-        <SchedulerEngine/>
-      )}
+{active==="fields" && (
+<FieldBoard fields={state.fields} games={gamesForDate}/>
+)}
 
-    </div>
-  )
+{active==="weather" && (
+<WeatherPanel weather={state.weather}/>
+)}
+
+{active==="medical" && (
+<TrainerPanel medical={state.medical}/>
+)}
+
+{active==="incidents" && (
+<IncidentPanel incidents={state.incidents}/>
+)}
+
+{active==="engine" && (
+<SchedulerEngine/>
+)}
+
+</div>
+)
+
 }

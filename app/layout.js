@@ -1,14 +1,12 @@
 
 import "../styles/globals.css"
 
-export const metadata = {
-  title:"LeagueOps Live v11"
-}
+export const metadata={title:"LeagueOps Live v12"}
 
 export default function RootLayout({children}){
-  return(
-    <html>
-      <body>{children}</body>
-    </html>
-  )
+return(
+<html>
+<body>{children}</body>
+</html>
+)
 }
