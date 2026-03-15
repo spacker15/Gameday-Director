@@ -1,9 +1,8 @@
 {
-  "name": "GameDay Director",
-  "short_name": "GameDay",
+  "name": "LeagueOps Live v6 Pro",
+  "short_name": "LeagueOps Live",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#f4f7fb",
-  "theme_color": "#143d59",
-  "icons": []
+  "background_color": "#08254a",
+  "theme_color": "#08254a"
 }
