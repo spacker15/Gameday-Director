@@ -1,5 +1,5 @@
 
-const STORAGE_KEY = "leagueops_live_v6_espn_dnd";
+const STORAGE_KEY = "leagueops_live_v6_1_scheduling_engine";
 const TABS = [
   {id:"dashboard", label:"Dashboard"},
   {id:"schedule", label:"Schedule"},
@@ -9,6 +9,7 @@ const TABS = [
   {id:"staff", label:"Refs & Volunteers"},
   {id:"weather", label:"Weather & Alerts"},
   {id:"uploads", label:"Uploads & Setup"},
+  {id:"scheduler", label:"Scheduling Engine"},
 ];
 let state = loadState();
 let activeTab = "dashboard";
@@ -94,6 +95,7 @@ function renderPane(id){
     case "staff": renderStaff(); break;
     case "weather": renderWeather(); break;
     case "uploads": renderUploads(); break;
+    case "scheduler": renderScheduler(); break;
   }
 }
 
@@ -1074,3 +1076,133 @@ window.deleteField = deleteField;
 window.exportBackup = exportBackup;
 window.importBackupPrompt = importBackupPrompt;
 window.runFieldBuilder = runFieldBuilder;
+
+
+function renderScheduler(){
+  const el = document.getElementById("scheduler");
+  const rules = state.schedulingRules || {
+    minimumRestMinutes: 30,
+    preferredRestMinutes: 60,
+    maxRestMinutes: 120,
+    allowProgramMatchups: false,
+    forcedDoubleHeaderPrograms: ["Ponte Vedra Riptide"],
+    restrictedFirstGamePrograms: []
+  };
+  const divisions = unique(state.games.map(g=>g.division)).map(div=>({
+    divisionName: div,
+    gameLength: div.includes('1/2') ? 45 : 60,
+    startInterval: div.includes('1/2') ? 45 : 60,
+    adultRefsRequired: div.includes('5/6') || div.includes('7/8') ? 2 : (div.includes('3/4') ? 1 : 0),
+    youthRefsRequired: div.includes('1/2') ? 2 : (div.includes('3/4') ? 1 : 0)
+  }));
+  const fieldRows = state.fields.map(f=>`<tr><td>${f.name}</td><td>${f.type||''}</td><td>${unique(state.games.filter(g=>g.field===f.name).map(g=>g.division)).join(', ') || 'Open'}</td></tr>`).join('');
+  const summary = `<div class="grid cols-4">
+    <div class="card kpi"><div class="small muted">Teams</div><div class="value">${state.teams.length}</div><div class="muted">Loaded into scheduling pool</div></div>
+    <div class="card kpi"><div class="small muted">Games</div><div class="value">${state.games.length}</div><div class="muted">Current master schedule</div></div>
+    <div class="card kpi"><div class="small muted">Fields</div><div class="value">${state.fields.length}</div><div class="muted">Mapped and editable</div></div>
+    <div class="card kpi"><div class="small muted">Divisions</div><div class="value">${divisions.length}</div><div class="muted">Variable-driven setup</div></div>
+  </div>`;
+  const codeBlock = (txt)=>`<pre class="code-block">${txt.replace(/</g,'&lt;')}</pre>`;
+  const steps = [
+    ['1. Input Data', codeBlock(`Team {
+  teamID
+  teamName
+  programName
+  division
+}
+
+Division {
+  divisionName
+  gameLength
+  startInterval
+  adultRefsRequired
+  youthRefsRequired
+}
+
+Field {
+  fieldID
+  fieldName
+  supportedDivisions[]
+}
+
+TimeSlot {
+  startTime
+  endTime
+}
+
+SchedulingRules {
+  minimumRestMinutes
+  preferredRestMinutes
+  maxRestMinutes
+  allowProgramMatchups
+  forcedDoubleHeaderPrograms[]
+  restrictedFirstGamePrograms[]
+}
+
+WeeklyOverrides {
+  unavailableTeams[]
+  forcedMatchups[]
+}`)],
+    ['2. Scheduling Process', `<ol class="logic-list">
+      <li><strong>Load Teams by Division</strong> and group only within the same division.</li>
+      <li><strong>Remove Unavailable Teams</strong> from the weekly pool before pairing begins.</li>
+      <li><strong>Create Matchup Pool</strong> enforcing same-division and same-program restrictions.</li>
+      <li><strong>Prioritize Special Matchups</strong> such as forced programs or early-slot priority teams.</li>
+      <li><strong>Assign Double Headers</strong> only when odd team counts require them, using preferred gap logic.</li>
+      <li><strong>Assign Fields and Times</strong> from valid slots and supported fields.</li>
+      <li><strong>Validate Rest Periods</strong> against minimum, preferred, and maximum rest windows.</li>
+      <li><strong>Validate Double Headers</strong> so only approved teams receive them.</li>
+      <li><strong>Run Final Validation</strong> before publish; rebuild any failed game.</li>
+      <li><strong>Calculate Referee Requirements</strong> by division, field, and time slot.</li>
+    </ol>`],
+    ['3. Rule Snapshot', `<div class="grid cols-3">
+      <div class="card"><div class="small muted">Minimum Rest</div><div class="value">${rules.minimumRestMinutes}</div><div class="muted">minutes</div></div>
+      <div class="card"><div class="small muted">Preferred Rest</div><div class="value">${rules.preferredRestMinutes}</div><div class="muted">minutes</div></div>
+      <div class="card"><div class="small muted">Max Rest</div><div class="value">${rules.maxRestMinutes}</div><div class="muted">minutes</div></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div><strong>Allow Program Matchups:</strong> ${rules.allowProgramMatchups ? 'Yes' : 'No'}</div>
+      <div><strong>Forced Double Header Programs:</strong> ${(rules.forcedDoubleHeaderPrograms||[]).join(', ') || 'None'}</div>
+      <div><strong>Restricted First Game Programs:</strong> ${(rules.restrictedFirstGamePrograms||[]).join(', ') || 'None'}</div>
+    </div>`],
+    ['4. Active Divisions', `<table class="data-table"><thead><tr><th>Division</th><th>Game Length</th><th>Start Interval</th><th>Adult Refs</th><th>Youth Refs</th></tr></thead><tbody>${divisions.map(d=>`<tr><td>${d.divisionName}</td><td>${d.gameLength} min</td><td>${d.startInterval} min</td><td>${d.adultRefsRequired}</td><td>${d.youthRefsRequired}</td></tr>`).join('')}</tbody></table>`],
+    ['5. Active Fields', `<table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Supported Divisions</th></tr></thead><tbody>${fieldRows}</tbody></table>`],
+    ['6. Validation Checklist', `<div class="check-grid">
+      <div class="check-item">✔ same division</div>
+      <div class="check-item">✔ no restricted program matchups</div>
+      <div class="check-item">✔ rest period satisfied</div>
+      <div class="check-item">✔ field available</div>
+      <div class="check-item">✔ time slot available</div>
+      <div class="check-item">✔ double headers allowed</div>
+    </div>`],
+    ['7. Referee Metrics', `<div class="card"><div class="muted">Metrics are generated per field, per time slot, and per division. Use this with the Refs & Volunteers tab to assign adult and youth coverage after the schedule is built.</div>${codeBlock(`RefRequirement
+{
+  division
+  adultRefs
+  youthRefs
+}`)}</div>`],
+    ['8. Export Outputs', `<div class="check-grid">
+      <div class="check-item">Master Schedule</div>
+      <div class="check-item">Referee Schedule</div>
+      <div class="check-item">Program Game Summary</div>
+      <div class="check-item">Excel / CSV / Web dashboard / Game Day field view</div>
+    </div>`],
+    ['9. Recommended Optimizer', `<div class="notice">Add a schedule optimizer that evaluates thousands of possible schedules and picks the best one using these goals: minimize double headers, minimize rest time violations, balance field usage, and balance early vs late games.</div>`]
+  ];
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="row space">
+        <div>
+          <h2>NFYLL Automated Scheduling Engine</h2>
+          <div class="muted">Variable-driven scheduling logic for LeagueOps Live. This pillar documents the rules your scheduling engine should follow each season.</div>
+        </div>
+        <button class="secondary" onclick="activeTab='uploads';renderTabs();renderPane('uploads');document.getElementById('uploads').scrollIntoView({behavior:'smooth'});">Go to Uploads & Setup</button>
+      </div>
+    </div>
+    ${summary}
+    <div class="stack" style="margin-top:16px">
+      ${steps.map(([title,body],idx)=>`<details class="card accordion" ${idx===0?'open':''}><summary><strong>${title}</strong></summary><div style="margin-top:12px">${body}</div></details>`).join('')}
+    </div>
+  `;
+}

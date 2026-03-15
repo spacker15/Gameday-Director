@@ -183,3 +183,6 @@ label{font-size:.9rem; font-weight:700; color:var(--navy)}
 @media (max-width: 1200px){
   .board-wrap,.map-shell,.dual-pane,.grid.cols-4,.grid.cols-3,.grid.cols-2,.metric-strip,.form-grid{grid-template-columns:1fr}
 }
+
+
+.code-block{background:#0b1f3a;color:#fff;padding:14px;border-radius:12px;overflow:auto;font-size:.9rem;line-height:1.45;white-space:pre-wrap}.logic-list{margin:0;padding-left:20px}.logic-list li{margin:8px 0}.data-table{width:100%;border-collapse:collapse}.data-table th,.data-table td{padding:10px;border-bottom:1px solid #dbe5f3;text-align:left}.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.check-item{background:#f5f8ff;border:1px solid #dbe5f3;border-radius:12px;padding:12px;font-weight:700}.accordion summary{cursor:pointer;list-style:none}.accordion summary::-webkit-details-marker{display:none}.accordion summary::after{content:"+";float:right;font-weight:900}.accordion[open] summary::after{content:"–"}.stack{display:grid;gap:12px}
