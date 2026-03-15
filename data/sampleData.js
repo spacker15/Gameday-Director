@@ -1,5 +1,5 @@
 
-export const initialState={
+export const initialState = {
 
 selectedDate:new Date().toISOString().split("T")[0],
 
@@ -15,17 +15,15 @@ fields:[
 teams:{
 Creeks:["Player1","Player2","Player3"],
 Riptide:["PlayerA","PlayerB","PlayerC"],
-"Jax Lax":["PlayerX","PlayerY","PlayerZ"],
+JaxLax:["PlayerX","PlayerY","PlayerZ"],
 Bulldogs:["PlayerM","PlayerN","PlayerO"]
 },
 
 games:[
 {date:"2026-03-15",time:"9:00 AM",team1:"Creeks",team2:"Riptide",field:1,status:"Scheduled"},
-{date:"2026-03-15",time:"9:00 AM",team1:"Jax Lax",team2:"Bulldogs",field:2,status:"Scheduled"},
+{date:"2026-03-15",time:"9:00 AM",team1:"JaxLax",team2:"Bulldogs",field:2,status:"Scheduled"},
 {date:"2026-03-16",time:"9:00 AM",team1:"Creeks",team2:"Bulldogs",field:1,status:"Scheduled"}
 ],
-
-checkins:{},
 
 refs:[
 {name:"Samuel Branford"},
@@ -39,12 +37,11 @@ volunteers:[
 ],
 
 incidents:[],
-
 medical:[],
 
 weather:{
 temp:82,
-humidity:70,
+humidity:71,
 lightning:false
 }
 

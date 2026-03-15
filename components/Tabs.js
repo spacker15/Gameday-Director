@@ -1,6 +1,5 @@
 
 export default function Tabs({tabs,active,setActive}){
-
 return(
 <div className="tabs">
 {tabs.map(t=>(
@@ -10,5 +9,4 @@ return(
 ))}
 </div>
 )
-
 }

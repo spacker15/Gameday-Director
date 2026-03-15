@@ -1,39 +1,47 @@
 
 body{
 margin:0;
-font-family:Arial;
-background:#eef3fb;
+font-family:Arial, Helvetica, sans-serif;
+background:#eef2fb;
 }
 
 header{
-background:#0b3275;
+background:#0b3d91;
 color:white;
-padding:16px;
+padding:18px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+border-bottom:6px solid #d62828;
 }
 
 .tabs{
 background:white;
 padding:10px;
-border-bottom:3px solid #2b59d1;
+border-bottom:4px solid #0b3d91;
 }
 
 button{
-padding:8px 14px;
-margin-right:6px;
+background:#0b3d91;
+color:white;
 border:none;
-border-radius:8px;
+padding:8px 14px;
+border-radius:6px;
 cursor:pointer;
+margin-right:6px;
+}
+
+button:hover{
+background:#1c57c9;
 }
 
 .panel{
 background:white;
 padding:16px;
+margin:16px;
 border-radius:10px;
-margin:14px;
-box-shadow:0 2px 6px rgba(0,0,0,.1);
+border-left:6px solid #d62828;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 .grid{
@@ -43,32 +51,18 @@ gap:12px;
 }
 
 .field-card{
-background:#f8fbff;
+background:white;
+border:1px solid #d0d7e6;
 padding:12px;
 border-radius:8px;
-border:1px solid #d8e0ee;
 }
 
-.badge{
+.status{
 padding:4px 8px;
-border-radius:20px;
+border-radius:12px;
 font-size:12px;
-background:#e5e7eb;
 }
 
-.roster-row{
-display:flex;
-justify-content:space-between;
-padding:8px;
-border-bottom:1px solid #eee;
-cursor:pointer;
-}
-
-.roster-row:hover{
-background:#eef6ff;
-}
-
-.alert{
-color:red;
-font-weight:bold;
-}
+.scheduled{background:#e5e7eb}
+.live{background:#22c55e;color:white}
+.delayed{background:#d62828;color:white}

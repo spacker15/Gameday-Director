@@ -2,13 +2,15 @@
 "use client"
 
 import {useState} from "react"
-import Tabs from "../components/Tabs"
-import FieldBoard from "../components/FieldBoard"
-import CheckinPanel from "../components/CheckinPanel"
-import WeatherPanel from "../components/WeatherPanel"
-import IncidentPanel from "../components/IncidentPanel"
-import TrainerPanel from "../components/TrainerPanel"
 import {initialState} from "../data/sampleData"
+
+import Tabs from "../components/Tabs"
+import FieldBoard from "../components/modules/FieldBoard"
+import Checkin from "../components/modules/Checkin"
+import Weather from "../components/modules/Weather"
+import Trainer from "../components/modules/Trainer"
+import Incidents from "../components/modules/Incidents"
+import Scheduler from "../components/modules/Scheduler"
 
 export default function Page(){
 
@@ -21,8 +23,9 @@ const tabs=[
 {key:"fields",label:"Field Board"},
 {key:"checkin",label:"Player Check-In"},
 {key:"weather",label:"Weather"},
-{key:"medical",label:"Trainer"},
-{key:"incidents",label:"Incidents"}
+{key:"trainer",label:"Trainer"},
+{key:"incidents",label:"Incidents"},
+{key:"scheduler",label:"Scheduling Engine"}
 ]
 
 const gamesToday=state.games.filter(g=>g.date===state.selectedDate)
@@ -33,11 +36,12 @@ return(
 
 <header>
 
-<h1>LeagueOps Live v13</h1>
+<h1>LeagueOps Live v15</h1>
 
 <div>
 Event Date
-<input type="date"
+<input
+type="date"
 value={state.selectedDate}
 onChange={(e)=>setState({...state,selectedDate:e.target.value})}
 />
@@ -59,7 +63,7 @@ onChange={(e)=>setState({...state,selectedDate:e.target.value})}
 )}
 
 {active==="checkin" && (
-<CheckinPanel
+<Checkin
 teams={state.teams}
 game={currentGame}
 checkins={checkins}
@@ -68,15 +72,19 @@ setCheckins={setCheckins}
 )}
 
 {active==="weather" && (
-<WeatherPanel weather={state.weather}/>
+<Weather weather={state.weather}/>
 )}
 
-{active==="medical" && (
-<TrainerPanel medical={state.medical}/>
+{active==="trainer" && (
+<Trainer medical={state.medical}/>
 )}
 
 {active==="incidents" && (
-<IncidentPanel incidents={state.incidents}/>
+<Incidents incidents={state.incidents}/>
+)}
+
+{active==="scheduler" && (
+<Scheduler/>
 )}
 
 </div>
