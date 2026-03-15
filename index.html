@@ -10,7 +10,7 @@
   <header class="topbar">
     <div>
       <h1>LeagueOps Live</h1>
-      <p class="subtitle">Web-based league operations board</p>
+      <p class="subtitle">League operations command center</p>
     </div>
     <div class="topbar-actions">
       <label>
@@ -22,72 +22,103 @@
     </div>
   </header>
 
-  <section class="hero-grid">
-    <div class="hero-card trainer-banner">
-      <div>
-        <div class="eyebrow">Central Trainer Coverage</div>
-        <h2 id="trainerName">Trainer: Unassigned</h2>
-        <p id="trainerMeta">Location: -- | Status: --</p>
-      </div>
-      <div class="inline-actions">
-        <button id="setTrainerBtn">Set Trainer</button>
-        <button id="trainerRespondBtn" class="ghost">Mark Responding</button>
-        <button id="trainerClearBtn" class="ghost">Clear Response</button>
-      </div>
-    </div>
-    <div class="hero-card weather-card">
-      <div class="eyebrow">Weather Delay Management</div>
-      <h2 id="weatherStatus">No Active Delay</h2>
-      <p id="weatherMeta">Fields open</p>
-      <div class="inline-actions">
-        <button id="startDelayBtn" class="warning">Start Delay</button>
-        <button id="resumePlayBtn" class="success ghost">Resume Play</button>
-      </div>
-    </div>
-    <div class="hero-card stats-card">
-      <div class="eyebrow">Live Snapshot</div>
-      <div class="stats-grid" id="snapshotStats"></div>
-    </div>
-  </section>
-
   <nav class="tabs" id="tabs">
-    <button data-tab="board" class="active">Scheduling Board</button>
-    <button data-tab="checkin">Self Check-In</button>
-    <button data-tab="rosters">Rosters + Player Cards</button>
-    <button data-tab="verification">Roster Verification</button>
+    <button data-tab="dashboard" class="active">Dashboard</button>
+    <button data-tab="board">Scheduling</button>
+    <button data-tab="siteops">Site Ops</button>
+    <button data-tab="checkin">Check-In</button>
+    <button data-tab="rosters">Rosters</button>
+    <button data-tab="verification">Verification</button>
     <button data-tab="refs">Ref Development</button>
-    <button data-tab="injuries">Injury Reports</button>
+    <button data-tab="injuries">Injuries</button>
+    <button data-tab="weather">Weather</button>
     <button data-tab="comms">Communications</button>
   </nav>
 
   <main>
-    <section id="board" class="tab-panel active">
+    <section id="dashboard" class="tab-panel active">
+      <div class="dashboard-grid">
+        <div class="hero-card trainer-banner">
+          <div class="eyebrow">Central Trainer Coverage</div>
+          <h2 id="trainerName">Trainer: Unassigned</h2>
+          <p id="trainerMeta">Location: -- | Status: --</p>
+          <div class="inline-actions">
+            <button id="setTrainerBtn">Set Trainer</button>
+            <button id="trainerRespondBtn" class="ghost">Mark Responding</button>
+            <button id="trainerClearBtn" class="ghost">Clear Response</button>
+          </div>
+        </div>
+
+        <div class="hero-card weather-card">
+          <div class="eyebrow">Weather Delay Management</div>
+          <h2 id="weatherStatus">No Active Delay</h2>
+          <p id="weatherMeta">Fields open</p>
+          <div class="inline-actions">
+            <button id="startDelayBtn" class="warning">Start Delay</button>
+            <button id="resumePlayBtn" class="success ghost">Resume Play</button>
+          </div>
+        </div>
+
+        <div class="hero-card stats-card wide">
+          <div class="eyebrow">League Snapshot</div>
+          <div class="stats-grid" id="snapshotStats"></div>
+        </div>
+
+        <div class="card wide">
+          <div class="panel-header compact">
+            <div>
+              <h3>Today at a Glance</h3>
+              <p class="muted">Quick visibility into game day health.</p>
+            </div>
+          </div>
+          <div class="glance-grid">
+            <div>
+              <h4>Open Staffing Gaps</h4>
+              <div id="dashboardGaps" class="list-stack"></div>
+            </div>
+            <div>
+              <h4>Recent Check-Ins</h4>
+              <div id="dashboardCheckins" class="list-stack"></div>
+            </div>
+            <div>
+              <h4>Latest Communications</h4>
+              <div id="dashboardMessages" class="list-stack"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="board" class="tab-panel">
       <div class="panel-header">
         <div>
-          <h3>ESPN-Style Scheduling Board</h3>
-          <p>Field columns with game cards, staffing, status, and quick actions.</p>
+          <h3>Scheduling Board</h3>
+          <p>Field-by-field operations board with staffing and roster status.</p>
         </div>
         <div class="inline-actions">
           <button id="addGameBtn">Add Game</button>
-          <button id="addLeagueNoteBtn" class="ghost">Add Ops Note</button>
         </div>
       </div>
       <div class="board-wrap">
         <aside class="board-sidebar">
-          <div class="sidebar-card">
-            <h4>Available Refs</h4>
-            <div id="availableRefs"></div>
-          </div>
-          <div class="sidebar-card">
-            <h4>Available Volunteers</h4>
-            <div id="availableVolunteers"></div>
-          </div>
-          <div class="sidebar-card">
-            <h4>Staffing Gaps</h4>
-            <div id="staffingGaps"></div>
-          </div>
+          <div class="sidebar-card"><h4>Available Refs</h4><div id="availableRefs"></div></div>
+          <div class="sidebar-card"><h4>Available Volunteers</h4><div id="availableVolunteers"></div></div>
+          <div class="sidebar-card"><h4>Staffing Gaps</h4><div id="staffingGaps"></div></div>
         </aside>
         <div class="field-board" id="fieldBoard"></div>
+      </div>
+    </section>
+
+    <section id="siteops" class="tab-panel">
+      <div class="two-col">
+        <div class="card">
+          <h3>Site Operations</h3>
+          <div id="siteOpsSummary" class="list-stack"></div>
+        </div>
+        <div class="card">
+          <h3>Field Status</h3>
+          <div id="fieldStatusList" class="list-stack"></div>
+        </div>
       </div>
     </section>
 
@@ -104,37 +135,24 @@
                 <option>Coach</option>
               </select>
             </label>
-            <label>Name
-              <input id="checkinName" placeholder="Enter name" />
-            </label>
-            <label>Assignment / Notes
-              <input id="checkinNotes" placeholder="Field 2, score table, etc." />
-            </label>
+            <label>Name<input id="checkinName" placeholder="Enter name" /></label>
+            <label>Assignment / Notes<input id="checkinNotes" placeholder="Field 2, score table, etc." /></label>
           </div>
           <button id="checkinSubmitBtn">Check In</button>
         </div>
-        <div class="card">
-          <h3>Check-In Log</h3>
-          <div id="checkinLog" class="list-stack"></div>
-        </div>
+        <div class="card"><h3>Check-In Log</h3><div id="checkinLog" class="list-stack"></div></div>
       </div>
     </section>
 
     <section id="rosters" class="tab-panel">
       <div class="two-col roster-layout">
         <div class="card">
-          <div class="panel-header compact">
-            <h3>Teams</h3>
-            <button id="addTeamBtn" class="ghost">Add Team</button>
-          </div>
+          <div class="panel-header compact"><h3>Teams</h3><button id="addTeamBtn" class="ghost">Add Team</button></div>
           <div id="teamList" class="list-stack"></div>
         </div>
         <div class="card">
           <div class="panel-header compact">
-            <div>
-              <h3 id="rosterTitle">Roster</h3>
-              <p class="muted">Player cards and eligibility view</p>
-            </div>
+            <div><h3 id="rosterTitle">Roster</h3><p class="muted">Player cards and eligibility view</p></div>
             <button id="addPlayerBtn">Add Player</button>
           </div>
           <div id="playerCards" class="player-grid"></div>
@@ -143,15 +161,7 @@
     </section>
 
     <section id="verification" class="tab-panel">
-      <div class="card">
-        <div class="panel-header compact">
-          <div>
-            <h3>Per-Game Roster Verification</h3>
-            <p class="muted">Verify both teams before first whistle.</p>
-          </div>
-        </div>
-        <div id="verificationList" class="verification-stack"></div>
-      </div>
+      <div class="card"><h3>Per-Game Roster Verification</h3><div id="verificationList" class="verification-stack"></div></div>
     </section>
 
     <section id="refs" class="tab-panel">
@@ -168,10 +178,7 @@
           </div>
           <button id="saveRefBtn">Save Referee</button>
         </div>
-        <div class="card">
-          <h3>Referee Development Tracking</h3>
-          <div id="refDevelopmentList" class="list-stack"></div>
-        </div>
+        <div class="card"><h3>Referee Development Tracking</h3><div id="refDevelopmentList" class="list-stack"></div></div>
       </div>
     </section>
 
@@ -189,10 +196,24 @@
           </div>
           <button id="saveInjuryBtn">Save Injury Report</button>
         </div>
-        <div class="card">
-          <h3>Incident Log</h3>
-          <div id="injuryLog" class="list-stack"></div>
+        <div class="card"><h3>Incident Log</h3><div id="injuryLog" class="list-stack"></div></div>
+      </div>
+    </section>
+
+    <section id="weather" class="tab-panel">
+      <div class="two-col">
+        <div class="card form-card">
+          <h3>Weather Delay Controls</h3>
+          <div class="grid-form">
+            <label>Delay Until<input id="delayUntilInput" placeholder="10:45 AM" /></label>
+            <label>Note<input id="delayNoteInput" placeholder="Lightning within 8 miles" /></label>
+          </div>
+          <div class="inline-actions">
+            <button id="startDelayFromFormBtn" class="warning">Start / Update Delay</button>
+            <button id="resumeFromFormBtn" class="success ghost">Resume Play</button>
+          </div>
         </div>
+        <div class="card"><h3>Weather Status</h3><div id="weatherHistory" class="list-stack"></div></div>
       </div>
     </section>
 
@@ -206,29 +227,30 @@
           </div>
           <button id="sendMessageBtn">Post Message</button>
         </div>
-        <div class="card">
-          <h3>Operations Log</h3>
-          <div id="messageLog" class="list-stack"></div>
-        </div>
+        <div class="card"><h3>Operations Log</h3><div id="messageLog" class="list-stack"></div></div>
       </div>
     </section>
   </main>
 
   <dialog id="gameDialog">
     <form method="dialog" class="dialog-form">
-      <h3 id="gameDialogTitle">Edit Game</h3>
+      <h3>Edit Game</h3>
       <div class="grid-form">
-        <label>Time<input id="gameTimeInput" placeholder="9:00 AM" /></label>
+        <label>Time<input id="gameTimeInput" /></label>
         <label>Home Team<select id="gameHomeInput"></select></label>
         <label>Away Team<select id="gameAwayInput"></select></label>
         <label>Field<select id="gameFieldInput"></select></label>
-        <label>Field Type<select id="gameTypeInput"><option>Full Field</option><option>7v7</option><option>Modified</option></select></label>
-        <label>Status<select id="gameStatusInput"><option>Ready</option><option>Missing Staff</option><option>Roster Issue</option><option>In Progress</option><option>Final</option><option>Weather Delay</option></select></label>
+        <label>Field Type<input id="gameFieldTypeInput" /></label>
+        <label>Status<select id="gameStatusInput"><option>Ready</option><option>Missing Staff</option><option>Roster Issue</option><option>In Progress</option><option>Completed</option></select></label>
+        <label>Ref 1<input id="gameRef1Input" /></label>
+        <label>Ref 2<input id="gameRef2Input" /></label>
+        <label>Clock<input id="gameClockInput" /></label>
+        <label>Score<input id="gameScoreInput" /></label>
       </div>
-      <div class="dialog-actions">
+      <menu class="dialog-actions">
         <button value="cancel" class="ghost">Cancel</button>
-        <button id="saveGameDialogBtn" value="default">Save</button>
-      </div>
+        <button id="saveGameBtn" value="default">Save</button>
+      </menu>
     </form>
   </dialog>
 
