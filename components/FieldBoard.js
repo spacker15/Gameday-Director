@@ -7,6 +7,7 @@ return games.find(g=>g.field===field.id)
 
 return(
 <div className="grid">
+
 {fields.map(field=>{
 
 const game=findGame(field)
@@ -30,6 +31,7 @@ return(
 )
 
 })}
+
 </div>
 )
 }

@@ -1,7 +1,7 @@
 
 body{
-font-family:Arial;
 margin:0;
+font-family:Arial;
 background:#eef3fb;
 }
 
@@ -9,6 +9,9 @@ header{
 background:#0b3275;
 color:white;
 padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .tabs{
@@ -19,7 +22,7 @@ border-bottom:3px solid #2b59d1;
 
 button{
 padding:8px 14px;
-margin-right:8px;
+margin-right:6px;
 border:none;
 border-radius:8px;
 cursor:pointer;
@@ -51,4 +54,21 @@ padding:4px 8px;
 border-radius:20px;
 font-size:12px;
 background:#e5e7eb;
+}
+
+.roster-row{
+display:flex;
+justify-content:space-between;
+padding:8px;
+border-bottom:1px solid #eee;
+cursor:pointer;
+}
+
+.roster-row:hover{
+background:#eef6ff;
+}
+
+.alert{
+color:red;
+font-weight:bold;
 }

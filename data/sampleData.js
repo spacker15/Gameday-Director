@@ -12,18 +12,40 @@ fields:[
 {id:6,name:"Field 6"}
 ],
 
+teams:{
+Creeks:["Player1","Player2","Player3"],
+Riptide:["PlayerA","PlayerB","PlayerC"],
+"Jax Lax":["PlayerX","PlayerY","PlayerZ"],
+Bulldogs:["PlayerM","PlayerN","PlayerO"]
+},
+
 games:[
 {date:"2026-03-15",time:"9:00 AM",team1:"Creeks",team2:"Riptide",field:1,status:"Scheduled"},
 {date:"2026-03-15",time:"9:00 AM",team1:"Jax Lax",team2:"Bulldogs",field:2,status:"Scheduled"},
-{date:"2026-03-15",time:"10:15 AM",team1:"Creeks Blue",team2:"Riptide Gray",field:3,status:"Scheduled"},
-
-{date:"2026-03-16",time:"9:00 AM",team1:"Creeks",team2:"Bulldogs",field:1,status:"Scheduled"},
-{date:"2026-03-16",time:"9:00 AM",team1:"Riptide",team2:"Jax Lax",field:2,status:"Scheduled"}
+{date:"2026-03-16",time:"9:00 AM",team1:"Creeks",team2:"Bulldogs",field:1,status:"Scheduled"}
 ],
 
-weather:{temp:82,humidity:70,lightning:false,lastStrike:"None"},
+checkins:{},
+
+refs:[
+{name:"Samuel Branford"},
+{name:"Kaleb Thrasher"},
+{name:"Gunner Lee"}
+],
+
+volunteers:[
+{name:"Amy Packer",role:"Score Table"},
+{name:"Brooke Smith",role:"Clock"}
+],
 
 incidents:[],
-medical:[]
+
+medical:[],
+
+weather:{
+temp:82,
+humidity:70,
+lightning:false
+}
 
 }

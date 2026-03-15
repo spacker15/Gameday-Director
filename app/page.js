@@ -2,47 +2,45 @@
 "use client"
 
 import {useState} from "react"
-import {initialState} from "../data/sampleData"
 import Tabs from "../components/Tabs"
 import FieldBoard from "../components/FieldBoard"
+import CheckinPanel from "../components/CheckinPanel"
 import WeatherPanel from "../components/WeatherPanel"
 import IncidentPanel from "../components/IncidentPanel"
 import TrainerPanel from "../components/TrainerPanel"
-import SchedulerEngine from "../components/SchedulerEngine"
+import {initialState} from "../data/sampleData"
 
 export default function Page(){
 
 const [state,setState]=useState(initialState)
 const [active,setActive]=useState("dashboard")
+const [checkins,setCheckins]=useState({})
 
 const tabs=[
 {key:"dashboard",label:"Dashboard"},
-{key:"fields",label:"Field Status"},
+{key:"fields",label:"Field Board"},
+{key:"checkin",label:"Player Check-In"},
 {key:"weather",label:"Weather"},
 {key:"medical",label:"Trainer"},
-{key:"incidents",label:"Incidents"},
-{key:"engine",label:"Scheduling Engine"}
+{key:"incidents",label:"Incidents"}
 ]
 
-const gamesForDate = state.games.filter(g=>g.date===state.selectedDate)
+const gamesToday=state.games.filter(g=>g.date===state.selectedDate)
+const currentGame=gamesToday[0]
 
 return(
 <div>
 
 <header>
 
-<h1>LeagueOps Live v12</h1>
+<h1>LeagueOps Live v13</h1>
 
 <div>
-
-Event Date:
-
-<input
-type="date"
+Event Date
+<input type="date"
 value={state.selectedDate}
 onChange={(e)=>setState({...state,selectedDate:e.target.value})}
 />
-
 </div>
 
 </header>
@@ -52,12 +50,21 @@ onChange={(e)=>setState({...state,selectedDate:e.target.value})}
 {active==="dashboard" && (
 <div className="panel">
 <h3>Live Field Status Board</h3>
-<FieldBoard fields={state.fields} games={gamesForDate}/>
+<FieldBoard fields={state.fields} games={gamesToday}/>
 </div>
 )}
 
 {active==="fields" && (
-<FieldBoard fields={state.fields} games={gamesForDate}/>
+<FieldBoard fields={state.fields} games={gamesToday}/>
+)}
+
+{active==="checkin" && (
+<CheckinPanel
+teams={state.teams}
+game={currentGame}
+checkins={checkins}
+setCheckins={setCheckins}
+/>
 )}
 
 {active==="weather" && (
@@ -70,10 +77,6 @@ onChange={(e)=>setState({...state,selectedDate:e.target.value})}
 
 {active==="incidents" && (
 <IncidentPanel incidents={state.incidents}/>
-)}
-
-{active==="engine" && (
-<SchedulerEngine/>
 )}
 
 </div>
