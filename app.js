@@ -84,6 +84,56 @@ function uniqueFields(){
   const vals = state.games.map(g=>String(g.field||'').trim()).concat(state.fields.map(f=>String(f.name||'').trim())).filter(Boolean);
   return [...new Set(vals)].sort((a,b)=>a.localeCompare(b));
 }
+
+function fieldNameFromParts(number, suffix=''){
+  const n = String(number||'').trim();
+  const suf = String(suffix||'').trim().toUpperCase();
+  return `Field ${n}${suf}`.trim();
+}
+function defaultFieldPlacement(index){
+  const cols = 3;
+  const col = index % cols;
+  const row = Math.floor(index / cols);
+  return {x: 18 + col*28, y: 18 + row*24, w: 16, h: 10, r:0};
+}
+function sortFieldsInPlace(){
+  state.fields.sort((a,b)=>{
+    const pa = parseFieldName(a.name), pb = parseFieldName(b.name);
+    if(pa.num !== pb.num) return pa.num - pb.num;
+    return pa.suffix.localeCompare(pb.suffix);
+  });
+}
+function parseFieldName(name=''){
+  const m = String(name).match(/field\s*(\d+)\s*([A-Za-z]?)/i);
+  return {num: Number(m?.[1]||9999), suffix: String(m?.[2]||'').toUpperCase()};
+}
+function upsertFieldByParts(number, suffix='', type='Full Field'){
+  const name = fieldNameFromParts(number, suffix);
+  let field = state.fields.find(f=>String(f.name).toLowerCase()===name.toLowerCase());
+  if(!field){
+    const placement = defaultFieldPlacement(state.fields.length);
+    field = {id: uid('field'), name, type, ...placement};
+    state.fields.push(field);
+  } else {
+    field.name = name;
+    if(type) field.type = type;
+  }
+  sortFieldsInPlace();
+  selectedField = field.name;
+  return field;
+}
+function buildSequentialFields(startNum, endNum, suffixMode='none', type='Full Field'){
+  const created = [];
+  for(let i=startNum;i<=endNum;i++){
+    if(suffixMode==='ab'){
+      created.push(upsertFieldByParts(i,'A',type));
+      created.push(upsertFieldByParts(i,'B',type));
+    } else {
+      created.push(upsertFieldByParts(i,'',type));
+    }
+  }
+  return created;
+}
 function filteredGames(){
   return state.games.filter(g => 
     (scheduleDateFilter==='ALL' || String(g.date||'')===scheduleDateFilter) &&
@@ -206,18 +256,42 @@ function renderSchedule(){
   $('#newGameBtn').onclick = createGame;
 }
 
+
 function renderParkMap(){
   const el = $('#parkmap');
   const fieldDetail = getField(selectedField) || state.fields[0];
   if(fieldDetail) selectedField = fieldDetail.name;
-  const fieldGames = state.games.filter(g=>g.field===fieldDetail.name).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-  const fieldButtons = state.fields.map(f=>`<button class="map-field-btn ${fieldDetail.name===f.name?'active':''}" data-select-field="${f.name}">${escapeHtml(f.name)}</button>`).join('');
+  const parsed = parseFieldName(fieldDetail?.name || 'Field 1A');
+  const fieldGames = fieldDetail ? state.games.filter(g=>g.field===fieldDetail.name).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)) : [];
+  const fieldButtons = state.fields.map(f=>`<button class="map-field-btn ${fieldDetail && fieldDetail.name===f.name?'active':''}" data-select-field="${f.name}">${escapeHtml(f.name)}</button>`).join('');
   el.innerHTML = `
-  <div class="section-title"><div><h2>Julington Creek Plantation Park map</h2><div class="muted">Use the editable field canvas to move rectangles, rotate them, and change their size. This version uses a cleaner aerial background and lets you tune the field layout live.</div></div></div>
+  <div class="section-title"><div><h2>Julington Creek Plantation Park map</h2><div class="muted">Build the field layout by number, then drag the fields exactly where you want them. Supports Field 1 through Field n, plus A/B splits like 1A and 1B.</div></div></div>
+  <div class="grid cols-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="section-title"><div><h3>Quick build fields</h3><div class="muted">Create a numbered run of fields in one shot.</div></div></div>
+      <div class="form-grid">
+        <label>Start #<input id="bulkStartNum" type="number" min="1" value="1"></label>
+        <label>End #<input id="bulkEndNum" type="number" min="1" value="6"></label>
+        <label>Suffix mode<select id="bulkSuffixMode"><option value="none">Numbers only</option><option value="ab">Add A + B</option></select></label>
+        <label>Field Type<input id="bulkFieldType" value="Full Field"></label>
+      </div>
+      <div class="actions"><button class="btn" id="buildFieldsBtn">Build / update fields</button></div>
+    </div>
+    <div class="card">
+      <div class="section-title"><div><h3>Add or rename a single field</h3><div class="muted">Place one field at a time with a number and optional letter.</div></div></div>
+      <div class="form-grid">
+        <label>Number<input id="singleFieldNum" type="number" min="1" value="${parsed.num===9999?1:parsed.num}"></label>
+        <label>Suffix<select id="singleFieldSuffix"><option value="" ${!parsed.suffix?'selected':''}>None</option><option value="A" ${parsed.suffix==='A'?'selected':''}>A</option><option value="B" ${parsed.suffix==='B'?'selected':''}>B</option></select></label>
+        <label>Field Type<input id="singleFieldType" value="${escapeHtml(fieldDetail?.type||'Full Field')}"></label>
+      </div>
+      <div class="actions"><button class="btn" id="saveSingleFieldBtn">Save field</button><button class="btn ghost" id="addSingleFieldBtn">Add as new</button><button class="btn ghost" id="deleteFieldBtn">Delete selected</button></div>
+    </div>
+  </div>
   <div class="map-shell editor">
     <div class="card map-editor-panel">
       <div class="section-title"><div><h3>Field layout editor</h3><div class="muted">Pick a field, then drag on the map or use the controls.</div></div></div>
-      <div class="chip-row">${fieldButtons}</div>
+      <div class="chip-row">${fieldButtons || '<span class="muted">No fields yet. Build some above.</span>'}</div>
+      ${fieldDetail ? `
       <div class="form-grid" style="margin-top:12px">
         <label>X %<input id="fieldX" type="number" step="0.1" value="${Number(fieldDetail.x).toFixed(1)}"></label>
         <label>Y %<input id="fieldY" type="number" step="0.1" value="${Number(fieldDetail.y).toFixed(1)}"></label>
@@ -232,79 +306,90 @@ function renderParkMap(){
       </div>
       <div class="list" style="margin-top:12px">
         ${fieldGames.length ? fieldGames.map(g=>`<div class="item"><strong>${g.date} • ${g.time}</strong>${escapeHtml(g.home)} vs ${escapeHtml(g.away)}<br><span class="muted">${g.ref1||'Open'} / ${g.ref2||'Open'} • ${g.scoreTable||'No table'}</span></div>`).join('') : '<div class="empty">No games on this field.</div>'}
-      </div>
+      </div>` : '<div class="empty">No fields loaded yet.</div>'}
     </div>
     <div class="park-map" id="parkMap">
       <img src="julington_map.jpg" alt="Julington Creek Plantation Park editable field map" />
       ${state.fields.map(f=>`
-        <div class="field-spot ${fieldDetail.name===f.name?'active':''}" data-field="${f.name}" style="left:${f.x}%;top:${f.y}%;width:${f.w}%;height:${f.h}%;transform:translate(-50%,-50%) rotate(${f.r||0}deg)">
+        <div class="field-spot ${fieldDetail && fieldDetail.name===f.name?'active':''}" data-field="${f.name}" style="left:${f.x}%;top:${f.y}%;width:${f.w}%;height:${f.h}%;transform:translate(-50%,-50%) rotate(${f.r||0}deg)">
           <span class="spot-label">${escapeHtml(f.name)}</span>
           <span class="resize-handle" title="Resize"></span>
           <span class="rotate-handle" title="Rotate"></span>
         </div>`).join('')}
     </div>
   </div>`;
-  $$('[data-select-field]', el).forEach(btn=> btn.onclick = ()=> { selectedField = btn.dataset.selectField; renderParkMap(); });
-  $('#applyFieldEdit').onclick = ()=> {
-    fieldDetail.x = clamp(Number($('#fieldX').value),0,100);
-    fieldDetail.y = clamp(Number($('#fieldY').value),0,100);
-    fieldDetail.w = clamp(Number($('#fieldW').value),2,60);
-    fieldDetail.h = clamp(Number($('#fieldH').value),2,60);
-    fieldDetail.r = clamp(Number($('#fieldR').value),-180,180);
-    fieldDetail.type = $('#fieldType').value.trim();
-    saveState(); renderParkMap(); renderSchedule();
-  };
-  $('#resetFieldEdit').onclick = ()=> {
-    fieldDetail.r = 0; fieldDetail.w = Math.max(fieldDetail.w, 10); fieldDetail.h = Math.max(fieldDetail.h, 10);
-    saveState(); renderParkMap();
-  };
-  setupMapInteractions();
-}
 
-function setupMapInteractions(){
-  const map = $('#parkMap'); if(!map) return;
-  $$('.field-spot', map).forEach(spot => {
-    spot.onpointerdown = (e)=>{
-      const field = getField(spot.dataset.field);
-      selectedField = field.name;
-      const mapRect = map.getBoundingClientRect();
-      const action = e.target.classList.contains('resize-handle') ? 'resize' : e.target.classList.contains('rotate-handle') ? 'rotate' : 'move';
-      const centerX = mapRect.left + mapRect.width * (field.x/100);
-      const centerY = mapRect.top + mapRect.height * (field.y/100);
-      mapInteraction = {
-        action,
-        field,
-        startX:e.clientX,
-        startY:e.clientY,
-        mapRect,
-        start:{x:field.x,y:field.y,w:field.w,h:field.h,r:field.r||0},
-        centerX, centerY
-      };
-      spot.setPointerCapture?.(e.pointerId);
-      e.preventDefault();
-      renderParkMap();
-    };
-  });
-  document.onpointermove = (e)=>{
-    if(!mapInteraction) return;
-    const m = mapInteraction;
-    const dxPct = ((e.clientX - m.startX)/m.mapRect.width)*100;
-    const dyPct = ((e.clientY - m.startY)/m.mapRect.height)*100;
-    if(m.action==='move'){
-      m.field.x = clamp(m.start.x + dxPct, 0, 100);
-      m.field.y = clamp(m.start.y + dyPct, 0, 100);
-    } else if(m.action==='resize'){
-      m.field.w = clamp(m.start.w + dxPct*2, 2, 80);
-      m.field.h = clamp(m.start.h + dyPct*2, 2, 80);
-    } else if(m.action==='rotate'){
-      const angle = Math.atan2(e.clientY - m.centerY, e.clientX - m.centerX) * 180 / Math.PI;
-      const startAngle = Math.atan2(m.startY - m.centerY, m.startX - m.centerX) * 180 / Math.PI;
-      m.field.r = Math.round(m.start.r + (angle - startAngle));
-    }
+  $$('[data-select-field]', el).forEach(btn=> btn.onclick = ()=> { selectedField = btn.dataset.selectField; renderParkMap(); });
+  $('#buildFieldsBtn').onclick = ()=> {
+    const start = Number($('#bulkStartNum').value || 1);
+    const end = Number($('#bulkEndNum').value || start);
+    const suffixMode = $('#bulkSuffixMode').value;
+    const type = $('#bulkFieldType').value.trim() || 'Full Field';
+    if(!start || !end || end < start) return alert('Enter a valid start and end field number.');
+    const made = buildSequentialFields(start, end, suffixMode, type);
     saveState();
-    renderParkMap();
+    addMessage('map', `Built ${made.length} field slots using ${suffixMode==='ab'?'A/B':'number-only'} numbering.`);
+    renderParkMap(); renderSchedule();
   };
-  document.onpointerup = ()=> { mapInteraction = null; };
+  $('#saveSingleFieldBtn').onclick = ()=> {
+    const num = Number($('#singleFieldNum').value || 1);
+    const suffix = $('#singleFieldSuffix').value;
+    const type = $('#singleFieldType').value.trim() || 'Full Field';
+    const newName = fieldNameFromParts(num, suffix);
+    if(fieldDetail){
+      const oldName = fieldDetail.name;
+      fieldDetail.name = newName;
+      fieldDetail.type = type;
+      state.games.forEach(g=>{ if(g.field===oldName) g.field = newName; });
+      sortFieldsInPlace();
+      selectedField = newName;
+      saveState();
+      addMessage('map', `${oldName} updated to ${newName}.`);
+      renderParkMap(); renderSchedule();
+    }
+  };
+  $('#addSingleFieldBtn').onclick = ()=> {
+    const num = Number($('#singleFieldNum').value || 1);
+    const suffix = $('#singleFieldSuffix').value;
+    const type = $('#singleFieldType').value.trim() || 'Full Field';
+    const field = upsertFieldByParts(num, suffix, type);
+    saveState();
+    addMessage('map', `${field.name} added to the park map.`);
+    renderParkMap(); renderSchedule();
+  };
+  $('#deleteFieldBtn').onclick = ()=> {
+    if(!fieldDetail) return;
+    if(!confirm(`Delete ${fieldDetail.name}? Games on this field will be moved to the first remaining field.`)) return;
+    const oldName = fieldDetail.name;
+    state.fields = state.fields.filter(f=>f.name!==oldName);
+    sortFieldsInPlace();
+    const fallback = state.fields[0]?.name || '';
+    state.games.forEach(g=>{ if(g.field===oldName) g.field = fallback; });
+    selectedField = fallback;
+    saveState();
+    addMessage('map', `${oldName} deleted.`);
+    renderParkMap(); renderSchedule();
+  };
+
+  if(fieldDetail){
+    $('#applyFieldEdit').onclick = ()=> {
+      fieldDetail.x = clamp(Number($('#fieldX').value),0,100);
+      fieldDetail.y = clamp(Number($('#fieldY').value),0,100);
+      fieldDetail.w = clamp(Number($('#fieldW').value),2,60);
+      fieldDetail.h = clamp(Number($('#fieldH').value),2,60);
+      fieldDetail.r = clamp(Number($('#fieldR').value),-180,180);
+      fieldDetail.type = $('#fieldType').value.trim();
+      saveState(); renderParkMap(); renderSchedule();
+    };
+    $('#resetFieldEdit').onclick = ()=> {
+      fieldDetail.r = 0; fieldDetail.w = Math.max(fieldDetail.w, 10); fieldDetail.h = Math.max(fieldDetail.h, 10);
+      saveState(); renderParkMap();
+    };
+  }
+
+  $$('.field-spot', el).forEach(spot=>{
+    spot.addEventListener('pointerdown', (ev)=> startMapInteraction(ev, spot));
+  });
 }
 
 function renderCheckin(){
@@ -446,7 +531,7 @@ function mapLocationToField(location){
   const clean = String(location || '').toLowerCase().replace(/\s+/g,'');
   const direct = state.fields.find(f => clean.includes(f.name.toLowerCase().replace(/\s+/g,'')));
   if(direct) return direct.name;
-  const m = clean.match(/field(\d)([ab]?)/); if(m){ const candidate = `Field ${m[1]}${m[2] ? m[2].toUpperCase() : ''}`; if(state.fields.some(f => f.name===candidate)) return candidate; }
+  const m = clean.match(/field(\d+)([ab]?)/); if(m){ const candidate = `Field ${m[1]}${m[2] ? m[2].toUpperCase() : ''}`; if(state.fields.some(f => f.name===candidate)) return candidate; }
   return state.fields[0]?.name || 'Field 1A';
 }
 
