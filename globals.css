@@ -1,0 +1,17 @@
+
+export default function IncidentBoard({incidents}){
+
+return(
+<div className="panel">
+
+<h3>Incident Monitor</h3>
+
+{incidents.map((i,k)=>(
+<div key={k}>
+{i.time} — Field {i.field} — {i.text}
+</div>
+))}
+
+</div>
+)
+}
