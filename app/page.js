@@ -6,9 +6,10 @@ import {initialState} from "../data/sampleData"
 
 import Tabs from "../components/Tabs"
 import FieldBoard from "../components/modules/FieldBoard"
-import Checkin from "../components/modules/Checkin"
-import Uploads from "../components/modules/Uploads"
-import Incidents from "../components/modules/Incidents"
+import RefCoverage from "../components/modules/RefCoverage"
+import Volunteers from "../components/modules/Volunteers"
+import Weather from "../components/modules/Weather"
+import IncidentLog from "../components/modules/IncidentLog"
 
 export default function Page(){
 
@@ -17,18 +18,17 @@ const [active,setActive]=useState("dashboard")
 
 const tabs=[
 {key:"dashboard",label:"Dashboard"},
-{key:"checkin",label:"Game Check‑In"},
-{key:"uploads",label:"Uploads"},
+{key:"schedule",label:"Schedule"},
+{key:"checkin",label:"Game Check-In"},
 {key:"incidents",label:"Incidents"}
 ]
-
-const game=state.games[0]
 
 return(
 <div>
 
 <header>
-<h1>LeagueOps Live v18</h1>
+
+<h1>LeagueOps Live v19 – Tournament Command Center</h1>
 
 <div>
 Event Date
@@ -44,28 +44,31 @@ onChange={e=>setState({...state,date:e.target.value})}
 <Tabs tabs={tabs} setActive={setActive}/>
 
 {active==="dashboard" && (
-<div className="panel">
+
+<div className="dashboard">
+
+<div>
+
 <h2>Live Field Status Board</h2>
+
 <FieldBoard games={state.games}/>
-</div>
-)}
 
-{active==="checkin" && (
-<div className="panel">
-<Checkin game={game} teams={state.teams} setState={setState} state={state}/>
 </div>
-)}
 
-{active==="uploads" && (
-<div className="panel">
-<Uploads setState={setState} state={state}/>
-</div>
-)}
+<div className="sidepanel">
 
-{active==="incidents" && (
-<div className="panel">
-<Incidents state={state} setState={setState}/>
+<RefCoverage refs={state.refs}/>
+
+<Volunteers volunteers={state.volunteers}/>
+
+<Weather weather={state.weather}/>
+
+<IncidentLog incidents={state.incidents}/>
+
 </div>
+
+</div>
+
 )}
 
 </div>
