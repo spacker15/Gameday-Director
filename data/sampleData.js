@@ -36,13 +36,14 @@ volunteers:[
 {name:"Brooke Smith",role:"Clock"}
 ],
 
-incidents:[],
-medical:[],
-
 weather:{
 temp:82,
 humidity:71,
-lightning:false
-}
+lightning:false,
+delayTimer:null
+},
+
+incidents:[],
+medical:[]
 
 }

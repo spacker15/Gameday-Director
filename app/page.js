@@ -6,37 +6,35 @@ import {initialState} from "../data/sampleData"
 
 import Tabs from "../components/Tabs"
 import FieldBoard from "../components/modules/FieldBoard"
-import Checkin from "../components/modules/Checkin"
+import DragBoard from "../components/modules/DragBoard"
+import Assignments from "../components/modules/Assignments"
 import Weather from "../components/modules/Weather"
-import Trainer from "../components/modules/Trainer"
-import Incidents from "../components/modules/Incidents"
+import MapBuilder from "../components/modules/MapBuilder"
 import Scheduler from "../components/modules/Scheduler"
 
 export default function Page(){
 
 const [state,setState]=useState(initialState)
 const [active,setActive]=useState("dashboard")
-const [checkins,setCheckins]=useState({})
 
 const tabs=[
 {key:"dashboard",label:"Dashboard"},
 {key:"fields",label:"Field Board"},
-{key:"checkin",label:"Player Check-In"},
+{key:"drag",label:"Drag Board"},
+{key:"assignments",label:"Assignments"},
 {key:"weather",label:"Weather"},
-{key:"trainer",label:"Trainer"},
-{key:"incidents",label:"Incidents"},
-{key:"scheduler",label:"Scheduling Engine"}
+{key:"map",label:"Park Builder"},
+{key:"scheduler",label:"Scheduler"}
 ]
 
 const gamesToday=state.games.filter(g=>g.date===state.selectedDate)
-const currentGame=gamesToday[0]
 
 return(
 <div>
 
 <header>
 
-<h1>LeagueOps Live v15</h1>
+<h1>LeagueOps Live v16</h1>
 
 <div>
 Event Date
@@ -62,25 +60,20 @@ onChange={(e)=>setState({...state,selectedDate:e.target.value})}
 <FieldBoard fields={state.fields} games={gamesToday}/>
 )}
 
-{active==="checkin" && (
-<Checkin
-teams={state.teams}
-game={currentGame}
-checkins={checkins}
-setCheckins={setCheckins}
-/>
+{active==="drag" && (
+<DragBoard games={gamesToday}/>
+)}
+
+{active==="assignments" && (
+<Assignments refs={state.refs} volunteers={state.volunteers}/>
 )}
 
 {active==="weather" && (
-<Weather weather={state.weather}/>
+<Weather weather={state.weather} setWeather={(w)=>setState({...state,weather:w})}/>
 )}
 
-{active==="trainer" && (
-<Trainer medical={state.medical}/>
-)}
-
-{active==="incidents" && (
-<Incidents incidents={state.incidents}/>
+{active==="map" && (
+<MapBuilder/>
 )}
 
 {active==="scheduler" && (
@@ -89,5 +82,4 @@ setCheckins={setCheckins}
 
 </div>
 )
-
 }
