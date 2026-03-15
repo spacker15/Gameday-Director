@@ -1,65 +1,55 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GameDay Director</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#143d59" />
-  <link rel="stylesheet" href="styles.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lacrosse Stat Tracker</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">GD</div>
-        <div>
-          <h1>GameDay Director</h1>
-          <p>League Operations Web App</p>
-        </div>
-      </div>
 
-      <nav class="nav" id="nav"></nav>
+<header>
+<h1>Girls Lacrosse Stat Tracker</h1>
+<p>Multi‑School Modular Version</p>
+</header>
 
-      <div class="sidebar-footer">
-        <label class="small-label">League Name</label>
-        <input id="leagueNameInput" type="text" placeholder="Any league name" />
-        <label class="small-label">Event Date</label>
-        <input id="eventDateInput" type="date" />
-        <button class="btn btn-primary btn-block" id="saveSettingsBtn">Save</button>
-      </div>
-    </aside>
+<nav>
+<button data-tab="setup">Setup</button>
+<button data-tab="game">Game</button>
+<button data-tab="players">Players</button>
+<button data-tab="reports">Reports</button>
+</nav>
 
-    <main class="main">
-      <header class="topbar">
-        <div>
-          <h2 id="pageTitle">Dashboard</h2>
-          <p id="subtitle"></p>
-        </div>
-        <div class="topbar-actions">
-          <button class="btn" id="seedBtn">Reset Sample Data</button>
-          <button class="btn btn-accent" id="exportBtn">Export Data</button>
-          <label class="btn btn-primary file-btn">
-            Import Data
-            <input type="file" id="importFile" accept="application/json" hidden />
-          </label>
-        </div>
-      </header>
+<section id="setup">
+<h2>Roster Import</h2>
+<textarea id="roster" placeholder="number,name,position,class"></textarea>
+<button id="import">Import Roster</button>
+</section>
 
-      <section id="view-dashboard" class="view"></section>
-      <section id="view-games" class="view hidden"></section>
-      <section id="view-fields" class="view hidden"></section>
-      <section id="view-refs" class="view hidden"></section>
-      <section id="view-volunteers" class="view hidden"></section>
-      <section id="view-reports" class="view hidden"></section>
-      <section id="view-settings" class="view hidden"></section>
-    </main>
-  </div>
+<section id="game">
+<h2>Scoreboard</h2>
+<div>
+<button id="homePlus">+</button>
+<span id="home">0</span>
+</div>
 
-  <dialog id="modal">
-    <form method="dialog" class="modal-card" id="modalContent"></form>
-  </dialog>
+<div>
+<button id="awayPlus">+</button>
+<span id="away">0</span>
+</div>
+</section>
 
-  <script src="app.js"></script>
+<section id="players">
+<h2>Players</h2>
+<div id="grid"></div>
+</section>
+
+<section id="reports">
+<h2>Game Recap</h2>
+<textarea id="report"></textarea>
+<button id="generate">Generate Recap</button>
+</section>
+
+<script type="module" src="modules/app.js"></script>
 </body>
 </html>
