@@ -1,154 +1,66 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LeagueOps Live – Full Tabs</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script defer src="app.js"></script>
+<meta charset="UTF-8">
+<title>LeagueOps Live v9</title>
+<link rel="stylesheet" href="styles.css">
+<script defer src="app.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <div class="eyebrow">WEB-BASED LEAGUE COMMAND CENTER</div>
-      <h1>LeagueOps Live</h1>
-      <div class="subline">Operations Command Center • Full Navigation Restored</div>
-    </div>
-    <div class="top-actions">
-      <button class="ghost">Export Backup</button>
-      <button class="danger">Reset Demo</button>
-    </div>
-  </header>
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="dashboard">Dashboard</button>
-    <button class="tab" data-tab="schedule">Schedule Board</button>
-    <button class="tab" data-tab="park">Park Map</button>
-    <button class="tab" data-tab="checkin">Player Check-In</button>
-    <button class="tab" data-tab="rosters">Rosters</button>
-    <button class="tab" data-tab="staff">Refs & Volunteers</button>
-    <button class="tab" data-tab="weather">Weather & Alerts</button>
-    <button class="tab" data-tab="uploads">Uploads & Setup</button>
-    <button class="tab" data-tab="engine">Scheduling Engine</button>
-  </nav>
+<header class="topbar">
+<h1>LeagueOps Live v9</h1>
+<div>Uploads • Rosters • Check‑In • Scheduling • Drag & Drop</div>
+</header>
 
-  <main>
-    <section id="dashboard" class="page active">
-      <div class="tile-grid">
-        <div class="metric blue"><div class="label">Scheduled</div><div class="value" id="metricScheduled">0</div></div>
-        <div class="metric yellow"><div class="label">Starting</div><div class="value" id="metricStarting">0</div></div>
-        <div class="metric green"><div class="label">Live</div><div class="value" id="metricLive">0</div></div>
-        <div class="metric orange"><div class="label">Halftime</div><div class="value" id="metricHalftime">0</div></div>
-        <div class="metric gray"><div class="label">Final</div><div class="value" id="metricFinal">0</div></div>
-        <div class="metric red"><div class="label">Delayed</div><div class="value" id="metricDelayed">0</div></div>
-      </div>
+<nav class="tabs">
+<button class="tab active" data-tab="dashboard">Dashboard</button>
+<button class="tab" data-tab="schedule">Schedule</button>
+<button class="tab" data-tab="rosters">Rosters</button>
+<button class="tab" data-tab="checkin">Player Check‑In</button>
+<button class="tab" data-tab="uploads">Uploads</button>
+<button class="tab" data-tab="engine">Scheduling Engine</button>
+</nav>
 
-      <div class="dashboard-grid">
-        <section class="panel">
-          <div class="panel-title">Field Operations Board</div>
-          <div id="fieldStatusGrid" class="field-status-grid"></div>
-        </section>
-        <section class="panel">
-          <div class="panel-title">Ref Coverage</div>
-          <div id="refCoverage"></div>
-        </section>
-        <section class="panel">
-          <div class="panel-title">Player Verification</div>
-          <div id="playerVerification"></div>
-        </section>
-        <section class="panel">
-          <div class="panel-title">Incident Monitor</div>
-          <div id="incidentMonitor"></div>
-        </section>
-        <section class="panel">
-          <div class="panel-title">Weather Command</div>
-          <div class="weather-box">
-            <div class="weather-row"><span>Conditions</span><strong>Clear</strong></div>
-            <div class="weather-row"><span>Temp</span><strong>78°F</strong></div>
-            <div class="weather-row"><span>Wind</span><strong>6 mph</strong></div>
-            <div class="weather-alert safe" id="weatherStatus">SAFE</div>
-          </div>
-        </section>
-        <section class="panel">
-          <div class="panel-title">Operations Log</div>
-          <div id="opsLog"></div>
-        </section>
-      </div>
-    </section>
+<main>
 
-    <section id="schedule" class="page">
-      <div class="board-toolbar">
-        <h2>Schedule Board</h2>
-        <button id="delayAllBtn" class="danger">Trigger Lightning Delay</button>
-      </div>
-      <div id="boardGrid" class="board-grid"></div>
-    </section>
+<section id="dashboard" class="page active">
+<h2>Game Status</h2>
+<div id="statusCounts"></div>
+</section>
 
-    <section id="park" class="page">
-      <div class="panel">
-        <div class="panel-title">Park Map</div>
-        <div class="placeholder">Park map tab restored. This is where the Google Maps / field overlay builder will live.</div>
-      </div>
-    </section>
+<section id="schedule" class="page">
+<h2>Schedule Board</h2>
+<div id="scheduleBoard"></div>
+</section>
 
-    <section id="checkin" class="page">
-      <div class="panel">
-        <div class="panel-title">Player Check-In</div>
-        <div class="placeholder">Player-by-player game check-in tab restored.</div>
-        <div id="checkinList"></div>
-      </div>
-    </section>
+<section id="rosters" class="page">
+<h2>Team Rosters</h2>
+<div id="rosterDisplay"></div>
+</section>
 
-    <section id="rosters" class="page">
-      <div class="panel">
-        <div class="panel-title">Rosters</div>
-        <div class="placeholder">Roster center tab restored.</div>
-        <div id="rosterList"></div>
-      </div>
-    </section>
+<section id="checkin" class="page">
+<h2>Player Check‑In</h2>
+<div id="checkinDisplay"></div>
+</section>
 
-    <section id="staff" class="page">
-      <div class="panel">
-        <div class="panel-title">Refs & Volunteers</div>
-        <div class="placeholder">Staffing tab restored.</div>
-        <div class="staff-columns">
-          <div><h3>Refs</h3><div id="refList"></div></div>
-          <div><h3>Volunteers</h3><div id="volList"></div></div>
-        </div>
-      </div>
-    </section>
+<section id="uploads" class="page">
+<h2>Upload Files</h2>
+<label>Upload Rosters CSV</label>
+<input type="file" id="rosterUpload">
 
-    <section id="weather" class="page">
-      <div class="panel">
-        <div class="panel-title">Weather & Alerts</div>
-        <div class="placeholder">Weather tab restored.</div>
-        <button class="danger" id="delayWeatherBtn">Start 30-Minute Lightning Delay</button>
-      </div>
-    </section>
+<label>Upload Schedule CSV</label>
+<input type="file" id="scheduleUpload">
+</section>
 
-    <section id="uploads" class="page">
-      <div class="panel">
-        <div class="panel-title">Uploads & Setup</div>
-        <div class="placeholder">Roster upload, schedule upload, and settings tab restored.</div>
-      </div>
-    </section>
+<section id="engine" class="page">
+<h2>Scheduling Engine</h2>
+<button id="generateSchedule">Generate Schedule</button>
+<div id="engineOutput"></div>
+</section>
 
-    <section id="engine" class="page">
-      <div class="panel">
-        <div class="panel-title">Scheduling Engine</div>
-        <div class="placeholder">Scheduling engine tab restored.</div>
-        <ul class="engine-list">
-          <li>Reads teams by division</li>
-          <li>Removes unavailable teams</li>
-          <li>Builds matchup pools</li>
-          <li>Handles double headers</li>
-          <li>Assigns fields and times</li>
-          <li>Validates rest windows</li>
-          <li>Outputs weekly schedule automatically</li>
-        </ul>
-      </div>
-    </section>
-  </main>
+</main>
+
 </body>
 </html>
