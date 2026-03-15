@@ -1,16 +1,12 @@
 
-export default function Tabs({ active, setActive, tabs }){
-  return (
-    <nav className="tabs">
-      {tabs.map(tab => (
-        <button
-          key={tab.key}
-          className={`tab ${active===tab.key ? "active" : ""}`}
-          onClick={() => setActive(tab.key)}
-        >
-          {tab.label}
+export default function Tabs({active,setActive,tabs}){
+  return(
+    <div className="tabs">
+      {tabs.map(t=>(
+        <button key={t.key} onClick={()=>setActive(t.key)}>
+          {t.label}
         </button>
       ))}
-    </nav>
-  );
+    </div>
+  )
 }

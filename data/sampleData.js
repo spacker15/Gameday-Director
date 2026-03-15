@@ -1,34 +1,30 @@
 
 export const initialState = {
-  rosters: {
-    "Creeks": ["Player 1","Player 2","Player 3","Player 4"],
-    "Jax Lax": ["Player A","Player B","Player C","Player D"],
-    "Riptide": ["Player X","Player Y","Player Z","Player Q"],
-    "Bulldogs": ["Player M","Player N","Player O","Player P"]
-  },
-  refs: [
-    {name:"Samuel Branford", checkedIn:true},
-    {name:"Kaleb Thrasher", checkedIn:true},
-    {name:"Gavin Branford", checkedIn:false},
-    {name:"Grant Charles", checkedIn:false},
-    {name:"Sam Larkin", checkedIn:true},
-    {name:"Will Larkin", checkedIn:false},
-    {name:"Luke Peacock", checkedIn:true},
-    {name:"Gunner Lee", checkedIn:false},
-    {name:"Xander Lee", checkedIn:true}
+  selectedDate: new Date().toISOString().split("T")[0],
+
+  fields:[
+    {id:1,name:"Field 1"},
+    {id:2,name:"Field 2"},
+    {id:3,name:"Field 3"},
+    {id:4,name:"Field 4"},
+    {id:5,name:"Field 5"},
+    {id:6,name:"Field 6"}
   ],
-  volunteers: [
-    {name:"Amy Packer", checkedIn:true, role:"Score Table"},
-    {name:"Megan Packer", checkedIn:true, role:"Score Table"},
-    {name:"Ashton Packer", checkedIn:false, role:"Clock / Score"},
-    {name:"Brooke Smith", checkedIn:false, role:"Field Marshal"}
+
+  games:[
+    {time:"9:00 AM",team1:"Creeks",team2:"Riptide",field:1,status:"Scheduled"},
+    {time:"9:00 AM",team1:"Jax Lax",team2:"Bulldogs",field:2,status:"Scheduled"},
+    {time:"9:00 AM",team1:"Creeks Blue",team2:"Riptide Gray",field:3,status:"Scheduled"}
   ],
-  schedule: [
-    {time:"10:00 AM", team1:"Creeks", team2:"Jax Lax", field:"1", status:"Scheduled"},
-    {time:"11:00 AM", team1:"Riptide", team2:"Bulldogs", field:"2", status:"Scheduled"},
-    {time:"12:15 PM", team1:"Creeks", team2:"Bulldogs", field:"3", status:"Scheduled"},
-    {time:"1:30 PM", team1:"Jax Lax", team2:"Riptide", field:"4", status:"Scheduled"}
-  ],
-  checkins: {},
-  alerts: []
-};
+
+  incidents:[],
+
+  medical:[],
+
+  weather:{
+    temp:82,
+    humidity:71,
+    lightning:false,
+    lastStrike:"8 miles"
+  }
+}

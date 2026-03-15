@@ -1,44 +1,58 @@
 
-:root{
-  --navy:#123d8f; --red:#d62828; --bg:#eef3fb; --panel:#fff; --line:#d8e0ee; --text:#0d1b2a;
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#eef3fb;
 }
-*{box-sizing:border-box}
-body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:var(--text)}
-.topbar{background:linear-gradient(90deg,#0b3275 0%,#1d4ed8 70%,#7c3aed 100%);color:#fff;padding:18px 20px;border-top:4px solid var(--red);display:flex;justify-content:space-between;gap:16px}
-.eyebrow{font-size:11px;letter-spacing:1px;opacity:.85}
-h1{margin:2px 0 4px;font-size:28px}
-.subline{font-size:14px;opacity:.92}
-.top-actions{display:flex;gap:10px;align-items:flex-start}
-button{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-.ghost{background:#fff;color:#0b3275}
-.danger{background:var(--red);color:#fff}
-.tabs{display:flex;gap:10px;padding:10px 14px;background:#fff;border-bottom:3px solid #2b59d1;flex-wrap:wrap}
-.tab{padding:10px 14px;border-radius:999px;border:2px solid #bfd0f3;background:#fff;cursor:pointer}
-.tab.active{background:linear-gradient(90deg,#2b59d1 0%,#d62828 100%);color:#fff;border-color:transparent}
-.main-wrap{padding:18px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 4px 12px rgba(16,63,145,.08);margin-bottom:16px}
-.panel-title{font-size:18px;font-weight:800;margin-bottom:14px}
-.tile-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:14px;margin-bottom:18px}
-.metric{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:0 4px 12px rgba(16,63,145,.08)}
-.label{font-size:12px;font-weight:700;text-transform:uppercase}
-.value{font-size:30px;font-weight:800;margin-top:8px}
-.schedule-grid{display:grid;grid-template-columns:repeat(3,minmax(240px,1fr));gap:14px}
-.game-card,.team-card,.staff-card{background:#f8fbff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
-.time{font-size:12px;color:#53627a}
-.teams{font-weight:800;margin:4px 0}
-.small{font-size:12px;color:#53627a;margin-top:8px}
-.staff-columns,.upload-box{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.primary{background:#123d8f;color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;margin-top:8px}
-.roster-row{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line)}
-.roster-row.clickable{cursor:pointer;background:#fff}
-.roster-row.clickable:hover{background:#eef6ff}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700}
-.badge.pending{background:#e0e7ff;color:#1d4ed8}
-.badge.alert{background:#fee2e2;color:#991b1b}
-.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-select,input[type="file"]{padding:8px;border-radius:10px;border:1px solid #cbd5e1;background:#fff}
-.alert-box{padding:12px;border-radius:12px;margin:10px 0;font-weight:700}
-.alert-box.warn{background:#fff7ed;color:#9a3412;border:1px solid #fdba74}
-.alert-box.error{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
-.engine-list li{margin:8px 0}
-@media (max-width:1100px){.tile-grid{grid-template-columns:repeat(3,1fr)}.schedule-grid,.staff-columns,.upload-box{grid-template-columns:1fr}}
+
+header{
+  background:#0b3275;
+  color:white;
+  padding:16px;
+}
+
+.tabs{
+  background:white;
+  padding:10px;
+  border-bottom:3px solid #2b59d1;
+}
+
+button{
+  padding:8px 14px;
+  margin-right:8px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.panel{
+  background:white;
+  padding:16px;
+  border-radius:10px;
+  margin:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.field-card{
+  background:#f8fbff;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #d8e0ee;
+}
+
+.badge{
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+.live{background:#d1fae5}
+.half{background:#fde68a}
+.delay{background:#fee2e2}
+.final{background:#e5e7eb}

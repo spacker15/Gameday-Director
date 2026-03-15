@@ -1,15 +1,14 @@
 
-import "../styles/globals.css";
+import "../styles/globals.css"
 
 export const metadata = {
-  title: "LeagueOps Live v10.1",
-  description: "Game Day Operations Platform"
-};
+  title:"LeagueOps Live v11"
+}
 
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
+export default function RootLayout({children}){
+  return(
+    <html>
       <body>{children}</body>
     </html>
-  );
+  )
 }
