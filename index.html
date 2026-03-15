@@ -3,64 +3,108 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>LeagueOps Live v9</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeagueOps Live v9.1</title>
 <link rel="stylesheet" href="styles.css">
 <script defer src="app.js"></script>
 </head>
 <body>
-
 <header class="topbar">
-<h1>LeagueOps Live v9</h1>
-<div>Uploads • Rosters • Check‑In • Scheduling • Drag & Drop</div>
+  <div>
+    <div class="eyebrow">WEB-BASED LEAGUE COMMAND CENTER</div>
+    <h1>LeagueOps Live</h1>
+    <div class="subline">Sample data loaded • uploads commit with OK button</div>
+  </div>
 </header>
 
 <nav class="tabs">
-<button class="tab active" data-tab="dashboard">Dashboard</button>
-<button class="tab" data-tab="schedule">Schedule</button>
-<button class="tab" data-tab="rosters">Rosters</button>
-<button class="tab" data-tab="checkin">Player Check‑In</button>
-<button class="tab" data-tab="uploads">Uploads</button>
-<button class="tab" data-tab="engine">Scheduling Engine</button>
+  <button class="tab active" data-tab="dashboard">Dashboard</button>
+  <button class="tab" data-tab="schedule">Schedule</button>
+  <button class="tab" data-tab="rosters">Rosters</button>
+  <button class="tab" data-tab="checkin">Player Check-In</button>
+  <button class="tab" data-tab="staff">Refs & Volunteers</button>
+  <button class="tab" data-tab="uploads">Uploads</button>
+  <button class="tab" data-tab="engine">Scheduling Engine</button>
 </nav>
 
 <main>
-
 <section id="dashboard" class="page active">
-<h2>Game Status</h2>
-<div id="statusCounts"></div>
+  <div class="tile-grid">
+    <div class="metric"><div class="label">Teams</div><div class="value" id="teamsCount">0</div></div>
+    <div class="metric"><div class="label">Players</div><div class="value" id="playersCount">0</div></div>
+    <div class="metric"><div class="label">Games</div><div class="value" id="gamesCount">0</div></div>
+    <div class="metric"><div class="label">Refs</div><div class="value" id="refsCount">0</div></div>
+    <div class="metric"><div class="label">Volunteers</div><div class="value" id="volCount">0</div></div>
+    <div class="metric"><div class="label">Checked In</div><div class="value" id="checkinCount">0</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Today at a Glance</div>
+    <div id="todayGames"></div>
+  </div>
 </section>
 
 <section id="schedule" class="page">
-<h2>Schedule Board</h2>
-<div id="scheduleBoard"></div>
+  <div class="panel">
+    <div class="panel-title">Schedule Board</div>
+    <div id="scheduleBoard" class="schedule-grid"></div>
+  </div>
 </section>
 
 <section id="rosters" class="page">
-<h2>Team Rosters</h2>
-<div id="rosterDisplay"></div>
+  <div class="panel">
+    <div class="panel-title">Team Rosters</div>
+    <div id="rosterDisplay"></div>
+  </div>
 </section>
 
 <section id="checkin" class="page">
-<h2>Player Check‑In</h2>
-<div id="checkinDisplay"></div>
+  <div class="panel">
+    <div class="panel-title">Player Check-In</div>
+    <label>Game</label>
+    <select id="gameSelect"></select>
+    <div id="checkinDisplay"></div>
+  </div>
+</section>
+
+<section id="staff" class="page">
+  <div class="panel">
+    <div class="panel-title">Refs & Volunteers</div>
+    <div class="staff-columns">
+      <div><h3>Youth Refs</h3><div id="refDisplay"></div></div>
+      <div><h3>Volunteers</h3><div id="volDisplay"></div></div>
+    </div>
+  </div>
 </section>
 
 <section id="uploads" class="page">
-<h2>Upload Files</h2>
-<label>Upload Rosters CSV</label>
-<input type="file" id="rosterUpload">
-
-<label>Upload Schedule CSV</label>
-<input type="file" id="scheduleUpload">
+  <div class="panel">
+    <div class="panel-title">Uploads</div>
+    <div class="upload-box">
+      <div>
+        <label>Roster CSV</label>
+        <input type="file" id="rosterUpload">
+        <button id="commitRoster" class="primary">OK – Commit Roster Upload</button>
+        <div id="rosterUploadStatus" class="small"></div>
+      </div>
+      <div>
+        <label>Schedule CSV</label>
+        <input type="file" id="scheduleUpload">
+        <button id="commitSchedule" class="primary">OK – Commit Schedule Upload</button>
+        <div id="scheduleUploadStatus" class="small"></div>
+      </div>
+    </div>
+    <div class="small">Roster CSV format: TeamName,PlayerName</div>
+    <div class="small">Schedule CSV format: Time,Team1,Team2,Field</div>
+  </div>
 </section>
 
 <section id="engine" class="page">
-<h2>Scheduling Engine</h2>
-<button id="generateSchedule">Generate Schedule</button>
-<div id="engineOutput"></div>
+  <div class="panel">
+    <div class="panel-title">Scheduling Engine</div>
+    <button id="generateSchedule" class="primary">Generate Schedule</button>
+    <div id="engineOutput" class="small"></div>
+  </div>
 </section>
-
 </main>
-
 </body>
 </html>
