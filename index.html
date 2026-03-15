@@ -1,110 +1,136 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeagueOps Live v9.1</title>
-<link rel="stylesheet" href="styles.css">
-<script defer src="app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeagueOps Live v9.2</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
-<header class="topbar">
-  <div>
-    <div class="eyebrow">WEB-BASED LEAGUE COMMAND CENTER</div>
-    <h1>LeagueOps Live</h1>
-    <div class="subline">Sample data loaded • uploads commit with OK button</div>
-  </div>
-</header>
-
-<nav class="tabs">
-  <button class="tab active" data-tab="dashboard">Dashboard</button>
-  <button class="tab" data-tab="schedule">Schedule</button>
-  <button class="tab" data-tab="rosters">Rosters</button>
-  <button class="tab" data-tab="checkin">Player Check-In</button>
-  <button class="tab" data-tab="staff">Refs & Volunteers</button>
-  <button class="tab" data-tab="uploads">Uploads</button>
-  <button class="tab" data-tab="engine">Scheduling Engine</button>
-</nav>
-
-<main>
-<section id="dashboard" class="page active">
-  <div class="tile-grid">
-    <div class="metric"><div class="label">Teams</div><div class="value" id="teamsCount">0</div></div>
-    <div class="metric"><div class="label">Players</div><div class="value" id="playersCount">0</div></div>
-    <div class="metric"><div class="label">Games</div><div class="value" id="gamesCount">0</div></div>
-    <div class="metric"><div class="label">Refs</div><div class="value" id="refsCount">0</div></div>
-    <div class="metric"><div class="label">Volunteers</div><div class="value" id="volCount">0</div></div>
-    <div class="metric"><div class="label">Checked In</div><div class="value" id="checkinCount">0</div></div>
-  </div>
-  <div class="panel">
-    <div class="panel-title">Today at a Glance</div>
-    <div id="todayGames"></div>
-  </div>
-</section>
-
-<section id="schedule" class="page">
-  <div class="panel">
-    <div class="panel-title">Schedule Board</div>
-    <div id="scheduleBoard" class="schedule-grid"></div>
-  </div>
-</section>
-
-<section id="rosters" class="page">
-  <div class="panel">
-    <div class="panel-title">Team Rosters</div>
-    <div id="rosterDisplay"></div>
-  </div>
-</section>
-
-<section id="checkin" class="page">
-  <div class="panel">
-    <div class="panel-title">Player Check-In</div>
-    <label>Game</label>
-    <select id="gameSelect"></select>
-    <div id="checkinDisplay"></div>
-  </div>
-</section>
-
-<section id="staff" class="page">
-  <div class="panel">
-    <div class="panel-title">Refs & Volunteers</div>
-    <div class="staff-columns">
-      <div><h3>Youth Refs</h3><div id="refDisplay"></div></div>
-      <div><h3>Volunteers</h3><div id="volDisplay"></div></div>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">WEB-BASED LEAGUE COMMAND CENTER</div>
+      <h1>LeagueOps Live</h1>
+      <div class="subline">Restored features • proper XLSX/CSV uploads • game roster click check-in with duplicate alerts</div>
     </div>
-  </div>
-</section>
-
-<section id="uploads" class="page">
-  <div class="panel">
-    <div class="panel-title">Uploads</div>
-    <div class="upload-box">
-      <div>
-        <label>Roster CSV</label>
-        <input type="file" id="rosterUpload">
-        <button id="commitRoster" class="primary">OK – Commit Roster Upload</button>
-        <div id="rosterUploadStatus" class="small"></div>
-      </div>
-      <div>
-        <label>Schedule CSV</label>
-        <input type="file" id="scheduleUpload">
-        <button id="commitSchedule" class="primary">OK – Commit Schedule Upload</button>
-        <div id="scheduleUploadStatus" class="small"></div>
-      </div>
+    <div class="top-actions">
+      <button class="ghost" id="exportBtn">Export Backup</button>
+      <button class="danger" id="resetBtn">Reset Demo</button>
     </div>
-    <div class="small">Roster CSV format: TeamName,PlayerName</div>
-    <div class="small">Schedule CSV format: Time,Team1,Team2,Field</div>
-  </div>
-</section>
+  </header>
 
-<section id="engine" class="page">
-  <div class="panel">
-    <div class="panel-title">Scheduling Engine</div>
-    <button id="generateSchedule" class="primary">Generate Schedule</button>
-    <div id="engineOutput" class="small"></div>
-  </div>
-</section>
-</main>
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="schedule">Schedule</button>
+    <button class="tab" data-tab="rosters">Rosters</button>
+    <button class="tab" data-tab="checkin">Game Check-In</button>
+    <button class="tab" data-tab="staff">Refs & Volunteers</button>
+    <button class="tab" data-tab="uploads">Uploads</button>
+    <button class="tab" data-tab="engine">Scheduling Engine</button>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="page active">
+      <div class="tile-grid">
+        <div class="metric"><div class="label">Teams</div><div class="value" id="teamsCount">0</div></div>
+        <div class="metric"><div class="label">Players</div><div class="value" id="playersCount">0</div></div>
+        <div class="metric"><div class="label">Games</div><div class="value" id="gamesCount">0</div></div>
+        <div class="metric"><div class="label">Refs</div><div class="value" id="refsCount">0</div></div>
+        <div class="metric"><div class="label">Volunteers</div><div class="value" id="volCount">0</div></div>
+        <div class="metric"><div class="label">Checked In</div><div class="value" id="checkinCount">0</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Today at a Glance</div>
+        <div id="todayGames"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Alerts</div>
+        <div id="alertsDisplay"></div>
+      </div>
+    </section>
+
+    <section id="schedule" class="page">
+      <div class="panel">
+        <div class="panel-title">Schedule Board</div>
+        <div id="scheduleBoard" class="schedule-grid"></div>
+      </div>
+    </section>
+
+    <section id="rosters" class="page">
+      <div class="panel">
+        <div class="panel-title">Team Rosters</div>
+        <div class="toolbar">
+          <label>Team</label>
+          <select id="rosterTeamFilter"></select>
+        </div>
+        <div id="rosterDisplay"></div>
+      </div>
+    </section>
+
+    <section id="checkin" class="page">
+      <div class="panel">
+        <div class="panel-title">Game Check-In</div>
+        <div class="toolbar">
+          <label>Game</label>
+          <select id="gameSelect"></select>
+        </div>
+        <div class="small">Click a player row to check them in for that game. If the same player is already checked into another game, the system will alert you.</div>
+        <div id="checkinAlert"></div>
+        <div id="checkinDisplay"></div>
+      </div>
+    </section>
+
+    <section id="staff" class="page">
+      <div class="panel">
+        <div class="panel-title">Refs & Volunteers</div>
+        <div class="staff-columns">
+          <div><h3>Youth Refs</h3><div id="refDisplay"></div></div>
+          <div><h3>Volunteers</h3><div id="volDisplay"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="uploads" class="page">
+      <div class="panel">
+        <div class="panel-title">Uploads</div>
+        <div class="upload-box">
+          <div>
+            <label>Roster File (CSV or XLSX)</label>
+            <input type="file" id="rosterUpload" accept=".csv,.xlsx,.xls">
+            <button id="commitRoster" class="primary">OK – Commit Roster Upload</button>
+            <div id="rosterUploadStatus" class="small"></div>
+          </div>
+          <div>
+            <label>Schedule File (CSV or XLSX)</label>
+            <input type="file" id="scheduleUpload" accept=".csv,.xlsx,.xls">
+            <button id="commitSchedule" class="primary">OK – Commit Schedule Upload</button>
+            <div id="scheduleUploadStatus" class="small"></div>
+          </div>
+        </div>
+        <div class="small">Roster formats supported: Team, Player OR Player, Team. XLSX is parsed properly.</div>
+        <div class="small">Schedule formats supported: Time, Team1, Team2, Field OR headers with Time / Team1 / Team2 / Field.</div>
+      </div>
+    </section>
+
+    <section id="engine" class="page">
+      <div class="panel">
+        <div class="panel-title">Scheduling Engine</div>
+        <button id="generateSchedule" class="primary">Generate Schedule From Current Rosters</button>
+        <div id="engineOutput" class="small"></div>
+        <ul class="engine-list">
+          <li>Reads teams by division</li>
+          <li>Removes unavailable teams</li>
+          <li>Builds matchup pools</li>
+          <li>Handles double headers</li>
+          <li>Assigns fields/times</li>
+          <li>Validates rest windows</li>
+          <li>Outputs weekly schedule automatically</li>
+        </ul>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
