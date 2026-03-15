@@ -13,7 +13,10 @@ let selectedField = state.fields[0]?.name || null;
 let selectedGameId = state.games[0]?.id || null;
 let scheduleDateFilter = 'ALL';
 let scheduleDivisionFilter = 'ALL';
+let scheduleAssociationFilter = 'ALL';
+let scheduleFieldFilter = 'ALL';
 let rosterDivisionFilter = 'ALL';
+let rosterAssociationFilter = 'ALL';
 let mapInteraction = null;
 
 function loadState(){
@@ -51,14 +54,49 @@ function uniqueDivisions(){
   const fromTeams = state.teams.map(t=>String(t.division||'').trim()).filter(Boolean);
   return [...new Set([...fromGames, ...fromTeams])].sort((a,b)=>a.localeCompare(b));
 }
+function inferAssociationFromName(name=''){
+  const n = String(name||'').trim();
+  const lowered = n.toLowerCase();
+  if(lowered.includes('jax lax')) return 'Jax Lax';
+  if(lowered.includes('riptide')) return 'Ponte Vedra Riptide';
+  if(lowered.includes('creeks')) return 'Creeks Crocs - CAA';
+  if(lowered.includes('bulldog')) return 'Bulldogs LC';
+  if(lowered.includes('hammerhead')) return 'Hammerhead Lacrosse';
+  if(lowered.includes('redhawk')) return 'Gainesville RedHawks';
+  if(lowered.includes('eagles')) return 'Bold City Eagles Lacrosse Club';
+  if(lowered.includes('fleming')) return 'Fleming Island';
+  return n.replace(/^\d+U\s+/i,'').replace(/^\d+\/\d+\s+/,'').trim() || 'Unassigned';
+}
+function teamAssociation(team){
+  if(!team) return 'Unassigned';
+  return String(team.program||'').trim() || inferAssociationFromName(team.name);
+}
+function gameAssociation(game){
+  const home = getTeamByName(game.home);
+  const away = getTeamByName(game.away);
+  return teamAssociation(home || away || {name: game.home || game.away});
+}
+function uniqueAssociations(){
+  const vals = state.teams.map(teamAssociation).concat(state.games.map(gameAssociation)).filter(Boolean);
+  return [...new Set(vals)].sort((a,b)=>a.localeCompare(b));
+}
+function uniqueFields(){
+  const vals = state.games.map(g=>String(g.field||'').trim()).concat(state.fields.map(f=>String(f.name||'').trim())).filter(Boolean);
+  return [...new Set(vals)].sort((a,b)=>a.localeCompare(b));
+}
 function filteredGames(){
   return state.games.filter(g => 
     (scheduleDateFilter==='ALL' || String(g.date||'')===scheduleDateFilter) &&
-    (scheduleDivisionFilter==='ALL' || String(g.division||'')===scheduleDivisionFilter)
+    (scheduleDivisionFilter==='ALL' || String(g.division||'')===scheduleDivisionFilter) &&
+    (scheduleAssociationFilter==='ALL' || gameAssociation(g)===scheduleAssociationFilter) &&
+    (scheduleFieldFilter==='ALL' || String(g.field||'')===scheduleFieldFilter)
   );
 }
 function filteredTeams(){
-  return state.teams.filter(t => rosterDivisionFilter==='ALL' || String(t.division||'')===rosterDivisionFilter);
+  return state.teams.filter(t => 
+    (rosterDivisionFilter==='ALL' || String(t.division||'')===rosterDivisionFilter) &&
+    (rosterAssociationFilter==='ALL' || teamAssociation(t)===rosterAssociationFilter)
+  );
 }
 function tabSetup(){ 
   $$('#mainNav button').forEach(btn=> btn.onclick = ()=> switchTab(btn.dataset.tab));
@@ -104,7 +142,7 @@ function renderDashboard(){
     </div>
     <div class="grid cols-2" style="margin-top:16px">
       <div class="card"><div class="section-title"><div><h3>Today at a glance</h3><div class="muted">Open staffing, live issues, and board health.</div></div></div><div class="kpis"><div class="kpi"><div class="label">Open staffing slots</div><div class="value">${openStaffingCount()}</div></div><div class="kpi"><div class="label">Checked-in players</div><div class="value">${totalVerifiedPlayers()}</div></div><div class="kpi"><div class="label">Incidents</div><div class="value">${state.injuries.length}</div></div><div class="kpi"><div class="label">Messages</div><div class="value">${state.messages.length}</div></div><div class="kpi"><div class="label">Refs checked in</div><div class="value">${state.checkins.filter(c=>c.role==='Referee').length}</div></div><div class="kpi"><div class="label">Volunteers in</div><div class="value">${state.checkins.filter(c=>c.role==='Volunteer').length}</div></div></div></div>
-      <div class="card"><div class="section-title"><div><h3>Recommended next actions</h3><div class="muted">Built to make game day simpler.</div></div></div><div class="list"><div class="item"><strong>1. Filter the schedule by date</strong>Use the date and division filters to focus on one game day at a time.</div><div class="item"><strong>2. Check teams by division</strong>The roster center now groups and filters teams by division.</div><div class="item"><strong>3. Fine-tune the field layout</strong>Use the Park Map editor to move, resize, and rotate field rectangles directly on the map.</div></div></div>
+      <div class="card"><div class="section-title"><div><h3>Recommended next actions</h3><div class="muted">Built to make game day simpler.</div></div></div><div class="list"><div class="item"><strong>1. Filter the schedule by date</strong>Use the date, association, division, and field filters to focus on exactly what you need.</div><div class="item"><strong>2. Check teams by association or division</strong>The roster center now groups and filters teams by association and division.</div><div class="item"><strong>3. Fine-tune the field layout</strong>Use the Park Map editor to move, resize, and rotate field rectangles directly on the map.</div></div></div>
     </div>
     <div class="grid cols-3" style="margin-top:16px">
       <div class="card"><div class="section-title"><h3>Open staffing gaps</h3></div><div class="list">${gaps}</div></div>
@@ -126,25 +164,29 @@ function renderSchedule(){
   const volOptions = '<option value="">Select volunteer</option>' + state.volunteers.map(v=>`<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)}</option>`).join('');
   const dateOptions = `<option value="ALL">All dates</option>` + uniqueGameDates().map(d=>`<option ${scheduleDateFilter===d?'selected':''} value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
   const divisionOptions = `<option value="ALL">All divisions</option>` + uniqueDivisions().map(d=>`<option ${scheduleDivisionFilter===d?'selected':''} value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+  const associationOptions = `<option value="ALL">All associations</option>` + uniqueAssociations().map(a=>`<option ${scheduleAssociationFilter===a?'selected':''} value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+  const fieldOptions = `<option value="ALL">All fields</option>` + uniqueFields().map(f=>`<option ${scheduleFieldFilter===f?'selected':''} value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
   const gamesForBoard = filteredGames();
   const fieldsMarkup = state.fields.map(field=>{
     const games = gamesForBoard.filter(g=>g.field===field.name).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
     return `<div class="field-card"><div class="field-head"><div><h3>${field.name}</h3><div class="field-type">${field.type}</div></div><span class="badge">${games.length} games</span></div>${games.length? games.map(g=>{
-      return `<div class="game ${gameStatus(g)}"><div class="game-top"><div><strong>${escapeHtml(g.home)} vs ${escapeHtml(g.away)}</strong><div class="game-meta">${escapeHtml(g.date)} • ${escapeHtml(g.time)} • ${escapeHtml(g.division||'')}</div></div><span class="badge ${state.weather.activeDelay?'red':'green'}">${state.weather.activeDelay ? 'Delayed' : (g.status||'Scheduled')}</span></div><div class="scorebar"><div>${escapeHtml(g.home)} <span>${g.homeScore||0}</span></div><div>${escapeHtml(g.away)} <span>${g.awayScore||0}</span></div></div><div class="assign-grid"><label>Ref 1<select data-game="${g.id}" data-key="ref1">${refsOptions}</select></label><label>Ref 2<select data-game="${g.id}" data-key="ref2">${refsOptions}</select></label><label>Score Table<select data-game="${g.id}" data-key="scoreTable">${volOptions}</select></label><label>Clock<select data-game="${g.id}" data-key="clock">${volOptions}</select></label></div><div class="pill-row compact"><span class="pill">Home ${g.homeVerified?'Verified':'Pending'}</span><span class="pill">Away ${g.awayVerified?'Verified':'Pending'}</span></div><div class="actions"><button class="btn ghost" data-open-game="${g.id}">Open game</button><button class="btn ghost" data-verify-game="${g.id}">Verify players</button></div></div>`;
+      return `<div class="game ${gameStatus(g)}"><div class="game-top"><div><strong>${escapeHtml(g.home)} vs ${escapeHtml(g.away)}</strong><div class="game-meta">${escapeHtml(g.date)} • ${escapeHtml(g.time)} • ${escapeHtml(gameAssociation(g))} • ${escapeHtml(g.division||'')} • ${escapeHtml(g.field||'')}</div></div><span class="badge ${state.weather.activeDelay?'red':'green'}">${state.weather.activeDelay ? 'Delayed' : (g.status||'Scheduled')}</span></div><div class="scorebar"><div>${escapeHtml(g.home)} <span>${g.homeScore||0}</span></div><div>${escapeHtml(g.away)} <span>${g.awayScore||0}</span></div></div><div class="assign-grid"><label>Ref 1<select data-game="${g.id}" data-key="ref1">${refsOptions}</select></label><label>Ref 2<select data-game="${g.id}" data-key="ref2">${refsOptions}</select></label><label>Score Table<select data-game="${g.id}" data-key="scoreTable">${volOptions}</select></label><label>Clock<select data-game="${g.id}" data-key="clock">${volOptions}</select></label></div><div class="pill-row compact"><span class="pill">Home ${g.homeVerified?'Verified':'Pending'}</span><span class="pill">Away ${g.awayVerified?'Verified':'Pending'}</span></div><div class="actions"><button class="btn ghost" data-open-game="${g.id}">Open game</button><button class="btn ghost" data-verify-game="${g.id}">Verify players</button></div></div>`;
     }).join('') : '<div class="empty">No games assigned here for this filter.</div>'}</div>`;
   }).join('');
 
   const groupedByDate = uniqueGameDates().filter(d=>scheduleDateFilter==='ALL' || d===scheduleDateFilter).map(date=>{
-    const rows = filteredGames().filter(g=>g.date===date).sort((a,b)=>(String(a.time||'')).localeCompare(String(b.time||''))).map(g=>`<tr><td>${escapeHtml(g.time)}</td><td>${escapeHtml(g.division||'')}</td><td>${escapeHtml(g.home)} vs ${escapeHtml(g.away)}</td><td>${escapeHtml(g.field)}</td></tr>`).join('');
-    return `<div class="card"><div class="section-title"><h3>${escapeHtml(date)}</h3><span class="badge">${filteredGames().filter(g=>g.date===date).length} games</span></div><div class="table-wrap"><table class="simple-table"><thead><tr><th>Time</th><th>Division</th><th>Matchup</th><th>Field</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No games</td></tr>'}</tbody></table></div></div>`;
+    const rows = filteredGames().filter(g=>g.date===date).sort((a,b)=>(String(a.time||'')).localeCompare(String(b.time||''))).map(g=>`<tr><td>${escapeHtml(g.time)}</td><td>${escapeHtml(gameAssociation(g))}</td><td>${escapeHtml(g.division||'')}</td><td>${escapeHtml(g.home)} vs ${escapeHtml(g.away)}</td><td>${escapeHtml(g.field)}</td></tr>`).join('');
+    return `<div class="card"><div class="section-title"><h3>${escapeHtml(date)}</h3><span class="badge">${filteredGames().filter(g=>g.date===date).length} games</span></div><div class="table-wrap"><table class="simple-table"><thead><tr><th>Time</th><th>Association</th><th>Division</th><th>Matchup</th><th>Field</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No games</td></tr>'}</tbody></table></div></div>`;
   }).join('');
 
   el.innerHTML = `
-  <div class="section-title"><div><h2>Schedule Board</h2><div class="muted">Filter by date or division, assign refs/volunteers, and work the day from one board.</div></div><div class="actions"><button class="btn" id="newGameBtn">Add Game</button></div></div>
+  <div class="section-title"><div><h2>Schedule Board</h2><div class="muted">Filter by date, association, division, and field. Assign refs/volunteers and work the day from one board.</div></div><div class="actions"><button class="btn" id="newGameBtn">Add Game</button></div></div>
   <div class="toolbar card">
     <div class="toolbar-grid">
       <label>Date<select id="scheduleDateFilter">${dateOptions}</select></label>
+      <label>Association<select id="scheduleAssociationFilter">${associationOptions}</select></label>
       <label>Division<select id="scheduleDivisionFilter">${divisionOptions}</select></label>
+      <label>Field<select id="scheduleFieldFilter">${fieldOptions}</select></label>
       <div class="summary-box"><strong>${gamesForBoard.length}</strong><span>games in view</span></div>
       <div class="summary-box"><strong>${new Set(gamesForBoard.map(g=>g.field)).size}</strong><span>fields in use</span></div>
     </div>
@@ -152,7 +194,9 @@ function renderSchedule(){
   <div class="grid cols-2" style="margin-top:16px">${groupedByDate || '<div class="card"><div class="empty">No games match this filter.</div></div>'}</div>
   <div class="board" style="margin-top:16px"><div class="sidebar"><div class="card"><h3>Available refs</h3><div class="list">${state.refs.map(r=>`<div class="item"><strong>${escapeHtml(r.name)}</strong><span class="muted">${escapeHtml(r.level || 'Level 1')} • ${escapeHtml(r.phone || '')}</span></div>`).join('')}</div></div><div class="card"><h3>Available volunteers</h3><div class="list">${state.volunteers.map(v=>`<div class="item"><strong>${escapeHtml(v.name)}</strong><span class="muted">${(v.roles||[]).join(', ')}</span></div>`).join('')}</div></div></div><div class="field-grid">${fieldsMarkup}</div></div>`;
   $('#scheduleDateFilter').onchange = e => { scheduleDateFilter = e.target.value; renderSchedule(); };
+  $('#scheduleAssociationFilter').onchange = e => { scheduleAssociationFilter = e.target.value; renderSchedule(); };
   $('#scheduleDivisionFilter').onchange = e => { scheduleDivisionFilter = e.target.value; renderSchedule(); };
+  $('#scheduleFieldFilter').onchange = e => { scheduleFieldFilter = e.target.value; renderSchedule(); };
   $$('select[data-game]', el).forEach(sel=>{
     const game = state.games.find(g=>g.id===sel.dataset.game); sel.value = game[sel.dataset.key] || '';
     sel.onchange = ()=> { game[sel.dataset.key] = sel.value; saveState(); addMessage('staff', `${sel.dataset.key} assigned for ${game.home} vs ${game.away}: ${sel.value || 'cleared'}`); };
@@ -298,12 +342,18 @@ function renderRosters(){
     team = teamsInDivision[0] || state.teams[0];
   }
   if(team) selectedTeamId = team.id;
-  const groupedMarkup = uniqueDivisions().filter(d=>rosterDivisionFilter==='ALL' || d===rosterDivisionFilter).map(div=>{
-    const teams = state.teams.filter(t=>t.division===div);
-    return `<div class="division-group"><div class="division-head">${escapeHtml(div)} <span>${teams.length} teams</span></div>${teams.map(t=>`<button class="${team && team.id===t.id ? 'active':''}" data-team="${t.id}">${escapeHtml(t.name)}<div class="small muted">${t.players?.length || 0} players</div></button>`).join('')}</div>`;
-  }).join('') || '<div class="empty">No teams match this division.</div>';
+  const groupedMarkup = uniqueAssociations().filter(a=>rosterAssociationFilter==='ALL' || a===rosterAssociationFilter).map(assoc=>{
+    const assocTeams = filteredTeams().filter(t=>teamAssociation(t)===assoc);
+    if(!assocTeams.length) return '';
+    const divisionGroups = [...new Set(assocTeams.map(t=>t.division))].sort((a,b)=>a.localeCompare(b)).map(div=>{
+      const teams = assocTeams.filter(t=>t.division===div);
+      return `<div class="division-group"><div class="division-head">${escapeHtml(div)} <span>${teams.length} teams</span></div>${teams.map(t=>`<button class="${team && team.id===t.id ? 'active':''}" data-team="${t.id}">${escapeHtml(t.name)}<div class="small muted">${escapeHtml(teamAssociation(t))} • ${t.players?.length || 0} players</div></button>`).join('')}</div>`;
+    }).join('');
+    return `<div class="association-block"><div class="division-head">${escapeHtml(assoc)} <span>${assocTeams.length} teams</span></div>${divisionGroups}</div>`;
+  }).join('') || '<div class="empty">No teams match this association/division filter.</div>';
   const cards = team?.players?.map(p=>`<div class="player-card ${p.status==='Checked In'?'checked':''}"><div class="section-title"><div><h4>${escapeHtml(p.name)}</h4><div class="muted small">${escapeHtml(team.name)}</div></div><span class="badge ${p.status==='Checked In'?'green':'orange'}">${p.status==='Checked In'?'Checked In':'Pending'}</span></div><div class="pill-row"><span class="pill">USA ID: ${escapeHtml(p.usaId || '--')}</span><span class="pill">${escapeHtml(team.division || 'Division TBD')}</span></div><div class="muted small" style="margin-top:10px">Birthdate: ${escapeHtml(p.birthdate || '--')}</div></div>`).join('') || '<div class="empty">No players loaded yet.</div>';
-  el.innerHTML = `<div class="section-title"><div><h2>Roster center</h2><div class="muted">Browse teams by division, then open player cards and verification status.</div></div></div><div class="toolbar card"><div class="toolbar-grid"><label>Division<select id="rosterDivisionFilter">${divisionOptions}</select></label><div class="summary-box"><strong>${teamsInDivision.length}</strong><span>teams in view</span></div><div class="summary-box"><strong>${teamsInDivision.reduce((n,t)=>n+(t.players?.length||0),0)}</strong><span>players in view</span></div><div class="summary-box"><strong>${teamsInDivision.reduce((n,t)=>n+t.players.filter(p=>p.status==='Checked In').length,0)}</strong><span>players checked in</span></div></div></div><div class="rosters-wrap" style="margin-top:16px"><div class="card team-list"><h3>Teams by division</h3>${groupedMarkup}</div><div class="card"><div class="section-title"><div><h3>${team ? escapeHtml(team.name) : 'Roster'}</h3><div class="muted">Coach: ${escapeHtml(team?.coach || 'Not loaded')} ${team?.coachPhone ? '• ' + escapeHtml(team.coachPhone) : ''}</div></div><button class="btn ghost" id="addPlayerBtn">Add Player</button></div><div class="player-grid">${cards}</div></div></div>`;
+  el.innerHTML = `<div class="section-title"><div><h2>Roster center</h2><div class="muted">Browse teams by association and division, then open player cards and verification status.</div></div></div><div class="toolbar card"><div class="toolbar-grid"><label>Association<select id="rosterAssociationFilter">${associationOptions}</select></label><label>Division<select id="rosterDivisionFilter">${divisionOptions}</select></label><div class="summary-box"><strong>${teamsInDivision.length}</strong><span>teams in view</span></div><div class="summary-box"><strong>${teamsInDivision.reduce((n,t)=>n+(t.players?.length||0),0)}</strong><span>players in view</span></div><div class="summary-box"><strong>${teamsInDivision.reduce((n,t)=>n+t.players.filter(p=>p.status==='Checked In').length,0)}</strong><span>players checked in</span></div></div></div><div class="rosters-wrap" style="margin-top:16px"><div class="card team-list"><h3>Teams by division</h3>${groupedMarkup}</div><div class="card"><div class="section-title"><div><h3>${team ? escapeHtml(team.name) : 'Roster'}</h3><div class="muted">Coach: ${escapeHtml(team?.coach || 'Not loaded')} ${team?.coachPhone ? '• ' + escapeHtml(team.coachPhone) : ''} • Association: ${escapeHtml(team ? teamAssociation(team) : '--')}</div></div><button class="btn ghost" id="addPlayerBtn">Add Player</button></div><div class="player-grid">${cards}</div></div></div>`;
+  $('#rosterAssociationFilter').onchange = e => { rosterAssociationFilter = e.target.value; renderRosters(); };
   $('#rosterDivisionFilter').onchange = e => { rosterDivisionFilter = e.target.value; renderRosters(); };
   $$('[data-team]', el).forEach(btn=> btn.onclick = ()=> { selectedTeamId = btn.dataset.team; renderRosters(); });
   $('#addPlayerBtn').onclick = addPlayerToSelected;
